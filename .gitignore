@@ -1,0 +1,8 @@
+# OS Files
+.DS_Store
+
+# Node
+node_modules
+
+# React
+client/dist/bundle.js
