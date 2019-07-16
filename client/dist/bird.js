@@ -60,23 +60,13 @@ volumeSlider.addEventListener('input', e => {
     started = true;
     Tone.context.resume();
     startChirping();
+    startBeeping();
   }
   masterVolume.volume.value = dbScale(e.target.value);
 });
 
-class Bird {
-  constructor() {
-    this.modules = {};
-  }
-}
-
 class FreqMod {
   constructor(modulation, attack, decay) {
-    // Variable Params
-    this.modulation = modulation || 0;
-    this.attack = attack || 0;
-    this.decay = decay || 0;
-
     // Static Params
     this.attackDecayScale = 900;
     this.modulationScale = 3000;
@@ -89,25 +79,29 @@ class FreqMod {
     // Connect modules
     this.envelope.chain(this.vca, this.multiply);
     this.output = this.multiply;
+
+    // Variable Params
+    this.modulation = modulation || 0;
+    this.attack = attack || 0;
+    this.decay = decay || 0;
   }
 
   trigger() {
-    this.node.triggerAttackRelease(0.6);
+    this.envelope.triggerAttackRelease(0.6);
   }
 
   set modulation(value) {
-    this.modulation = value;
+    this._modulation = value;
     this.vca.value = value;
+  }
+
+  get modulation() {
+    return this._modulation || 0;
   }
 }
 
 class AmpMod {
   constructor(modulation, attack, decay) {
-    // Variable Params
-    this.modulation = modulation || 0;
-    this.attack = attack || 0;
-    this.decay = decay || 0;
-
     // Static Params
     this.attackDecayScale = 900;
 
@@ -116,18 +110,27 @@ class AmpMod {
     this.vca = new Tone.Volume();
 
     // Connect modules
-    this.envelope.chain(this.vca, this.multiply);
+    this.envelope.chain(this.vca);
 
     this.output = this.vca;
+
+    // Variable Params
+    this.modulation = modulation || 0;
+    this.attack = attack || 0;
+    this.decay = decay || 0;
   }
 
   trigger() {
-    this.node.triggerAttackRelease(0.6);
+    this.envelope.triggerAttackRelease(0.6);
   }
 
   set modulation(value) {
-    this.modulation = value;
+    this._modulation = value;
     this.vca.value = value;
+  }
+
+  get modulation() {
+    return this._modulation || 0;
   }
 }
 
@@ -173,7 +176,6 @@ class BirdVoice {
       this.freqModOffset,
       this.freqModVca2,
       this.osc.frequency,
-      this.ampModVca2
     );
 
     this.ampModLfo.chain(
@@ -183,7 +185,8 @@ class BirdVoice {
       this.osc.frequency,
     );
 
-    this.ampModVca2.connect(
+    this.osc.chain(
+      this.ampModVca2,
       this.vca
     );
 
@@ -191,8 +194,10 @@ class BirdVoice {
 
     this.output = this.vca;
 
-    // Start oscillator
+    // Start oscillators
     this.osc.start();
+    this.freqModLfo.start();
+    this.ampModLfo.start();
   }
 
   trigger() {
@@ -201,30 +206,57 @@ class BirdVoice {
   }
 }
 
-// class Beeper {
-//   constructor() {
-//     this.osc = new Tone.Oscillator(440, 'sine');
-//     this.vca = new Tone.Volume();
-//     this.env = new Tone.Envelope();
+class Bird {
+  constructor() {
+    this.voice = new BirdVoice(1,2);
+    this.freq1 = new FreqMod();
+    this.freq2 = new FreqMod();
+    this.amp2 = new AmpMod();
+    this.amp1 = new AmpMod();
 
-//     this.osc.chain(this.vca, masterVolume);
-//     this.env.connect(this.vca.volume);
-//     this.osc.start();
-//   }
 
-//   trigger() {
-//     this.env.triggerAttackRelease(0.6);
-//   }
-// }
+    this.freq1.output.connect(this.voice.freqModFreqIn);
+    this.amp1.output.connect(this.voice.freqModAmpIn);
+    this.freq2.output.connect(this.voice.ampModFreqIn);
+    this.amp2.output.connect(this.voice.ampModAmpIn);
 
-// const startBeeping = () => {
+    this.voice.output.connect(masterVolume);
+  }
+
+  trigger() {
+    this.voice.trigger();
+    this.freq1.trigger();
+    this.freq2.trigger();
+    this.amp2.trigger();
+    this.amp1.trigger();
+  }
+}
+
+class Beeper {
+  constructor() {
+    this.osc = new Tone.Oscillator(440, 'sine');
+    this.vca = new Tone.Volume();
+    this.env = new Tone.Envelope();
+
+    this.osc.chain(this.vca, masterVolume);
+    this.env.connect(this.vca.volume);
+    this.osc.start();
+  }
+
+  trigger() {
+    this.env.triggerAttackRelease(0.6);
+  }
+}
+
+const startBeeping = () => {
   // const beep = new Beeper();
   // setInterval(() => {beep.trigger()}, 1000);
-// }
+}
 
 const startChirping = () => {
-  const bird = new BirdVoice(1, 2);
-  bird.output.connect(masterVolume);
+  // const bird = new BirdVoice(1, 2);
+  // bird.output.connect(masterVolume);
+  const bird = new Bird();
 
   setInterval(() => {bird.trigger()}, 1000);
 }
