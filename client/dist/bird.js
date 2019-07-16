@@ -1,5 +1,4 @@
 // Variables
-
 // All scaled between 0 and 1
 const params = {
   freq: 0,
@@ -25,45 +24,17 @@ const params = {
   }
 };
 
-const freqScale = n => {
-  n * 7000 + 300;
-};
-const envScale = n => {
-  n * 900;
-};
-
 const dbScale = n => {
   return Math.log10(n) * 20;
 };
 
-// Modules:
-//  Env - 5
-//  Osc - 3
-//  VCA - 5 +?
-
 let masterVolume = new Tone.Volume();
 masterVolume.toMaster();
-// let osc = new Tone.Oscillator();
-// osc.chain(masterVolume, Tone.Master);
-// osc.start();
 
-document.body.innerHTML += `
-<input type="range" id="start" name="volume" min="0" max="1" step=".01" value="0">
-<label for="volume">Volume</label>
-`;
+////////////////////////////////////////////////////////////
+//
+//    Class Definitions
 
-let started = false;
-
-let volumeSlider = document.querySelector("input[name='volume']");
-volumeSlider.addEventListener('input', e => {
-  if (!started) {
-    started = true;
-    Tone.context.resume();
-    startChirping();
-    startBeeping();
-  }
-  masterVolume.volume.value = dbScale(e.target.value);
-});
 
 class FreqMod {
   constructor(modulation, attack, decay) {
@@ -200,6 +171,15 @@ class BirdVoice {
     this.ampModLfo.start();
   }
 
+  set ifrq(value){
+    this._ifrq = value;
+    this.ampModVca2.volume(dbScale((value * 7000) + 300));
+  }
+
+  get ifrq(){
+    return this._ifrq;
+  }
+
   trigger() {
     console.log('chirp');
     this.env.triggerAttackRelease(0.6);
@@ -232,31 +212,158 @@ class Bird {
   }
 }
 
-class Beeper {
-  constructor() {
-    this.osc = new Tone.Oscillator(440, 'sine');
-    this.vca = new Tone.Volume();
-    this.env = new Tone.Envelope();
+////////////////////////////////////////
+//  Main Action
 
-    this.osc.chain(this.vca, masterVolume);
-    this.env.connect(this.vca.volume);
-    this.osc.start();
-  }
+document.body.innerHTML += `
+<input type="range" id="volume" min="0" max="1" step=".01" value="0">
+<label for="volume">volume</label>
 
-  trigger() {
-    this.env.triggerAttackRelease(0.6);
-  }
-}
+<h2>Controls</h2>
+<h3>F</h3>
+<input type="range" id="ifrq" name="ifrq" min="0" max="1" step=".01" value="0">
+<label for="ifrq">ifrq</label>
 
-const startBeeping = () => {
-  // const beep = new Beeper();
-  // setInterval(() => {beep.trigger()}, 1000);
-}
+<h3>amp</h3>
+<input type="range" id="amp-atk" min="0" max="1" step=".01" value="0">
+<label for="amp-atk">amp-atk</label>
+<input type="range" id="amp-dcy" min="0" max="1" step=".01" value="0">
+<label for="amp-dcy">amp-dcy</label>
+
+<h3>f-modulation</h3>
+<input type="range" id="fmod1" min="0" max="1" step=".01" value="0">
+<label for="fmod1">fmod1</label>
+<input type="range" id="atkf1" min="0" max="1" step=".01" value="0">
+<label for="atkf1">atkf1</label>
+<input type="range" id="dcyf1" min="0" max="1" step=".01" value="0">
+<label for="dcyf1">dcyf1</label>
+<input type="range" id="fmod2" min="0" max="1" step=".01" value="0">
+<label for="fmod2">fmod2</label>
+<input type="range" id="atkf2" min="0" max="1" step=".01" value="0">
+<label for="atkf2">atkf2</label>
+<input type="range" id="dcyf2" min="0" max="1" step=".01" value="0">
+<label for="dcyf2">dcyf2</label>
+
+<h3>a-modulation</h3>
+<input type="range" id="amod1" min="0" max="1" step=".01" value="0">
+<label for="amod1">amod1</label>
+<input type="range" id="atka1" min="0" max="1" step=".01" value="0">
+<label for="atka1">atka1</label>
+<input type="range" id="dcya1" min="0" max="1" step=".01" value="0">
+<label for="dcya1">dcya1</label>
+<input type="range" id="amod2" min="0" max="1" step=".01" value="0">
+<label for="amod2">amod2</label>
+<input type="range" id="atka2" min="0" max="1" step=".01" value="0">
+<label for="atka2">atka2</label>
+<input type="range" id="dcya2" min="0" max="1" step=".01" value="0">
+<label for="dcya2">dcya2</label>
+`;
 
 const startChirping = () => {
-  // const bird = new BirdVoice(1, 2);
-  // bird.output.connect(masterVolume);
-  const bird = new Bird();
-
-  setInterval(() => {bird.trigger()}, 1000);
+  window.bird = new Bird();
+  setInterval(() => {window.bird.trigger()}, 1000);
 }
+
+let started = false;
+
+let volumeSlider = document.querySelector("#volume");
+volumeSlider.addEventListener('input', e => {
+  if (!started) {
+    started = true;
+    Tone.context.resume();
+    startChirping();
+  }
+  masterVolume.volume.value = dbScale(e.target.value);
+});
+
+
+document.querySelector("#ifrq").addEventListener('input', e => {
+  const val = e.target.value;
+  console.log('ifrq val:', val);
+  window.bird.ifrq = val;
+});
+
+
+document.querySelector("#amp-atk").addEventListener('input', e => {
+  const val = e.target.value;
+
+});
+
+
+document.querySelector("#amp-dcy").addEventListener('input', e => {
+  const val = e.target.value;
+
+});
+
+
+document.querySelector("#fmod1").addEventListener('input', e => {
+  const val = e.target.value;
+
+});
+
+
+document.querySelector("#atkf1").addEventListener('input', e => {
+  const val = e.target.value;
+
+});
+
+
+document.querySelector("#dcyf1").addEventListener('input', e => {
+  const val = e.target.value;
+
+});
+
+
+document.querySelector("#fmod2").addEventListener('input', e => {
+  const val = e.target.value;
+
+});
+
+
+document.querySelector("#atkf2").addEventListener('input', e => {
+  const val = e.target.value;
+
+});
+
+
+document.querySelector("#dcyf2").addEventListener('input', e => {
+  const val = e.target.value;
+
+});
+
+
+document.querySelector("#amod1").addEventListener('input', e => {
+  const val = e.target.value;
+
+});
+
+
+document.querySelector("#atka1").addEventListener('input', e => {
+  const val = e.target.value;
+
+});
+
+
+document.querySelector("#dcya1").addEventListener('input', e => {
+  const val = e.target.value;
+
+});
+
+
+document.querySelector("#amod2").addEventListener('input', e => {
+  const val = e.target.value;
+
+});
+
+
+document.querySelector("#atka2").addEventListener('input', e => {
+  const val = e.target.value;
+
+});
+
+
+document.querySelector("#dcya2").addEventListener('input', e => {
+  const val = e.target.value;
+
+});
+
