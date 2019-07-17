@@ -173,7 +173,8 @@ class BirdVoice {
 
   set ifrq(value){
     this._ifrq = value;
-    this.ampModVca2.volume(dbScale((value * 7000) + 300));
+    this.ampModVca2.volume.value = dbScale((value * 7000) + 300);
+    // this.ampModVca2.volume.value = (value * 7000) + 300;
   }
 
   get ifrq(){
@@ -200,7 +201,8 @@ class Bird {
     this.freq2.output.connect(this.voice.ampModFreqIn);
     this.amp2.output.connect(this.voice.ampModAmpIn);
 
-    this.voice.output.connect(masterVolume);
+    this.pad = new Tone.Volume(-60);
+    this.voice.output.chain(this.pad, masterVolume);
   }
 
   trigger() {
@@ -209,6 +211,14 @@ class Bird {
     this.freq2.trigger();
     this.amp2.trigger();
     this.amp1.trigger();
+  }
+
+  set ifrq(value) {
+    this.voice.ifrq = value;
+  }
+
+  get ifrq() {
+    return this.voice.ifrq;
   }
 }
 
