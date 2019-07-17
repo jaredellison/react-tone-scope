@@ -120,7 +120,7 @@ class BirdVoice {
     this.freqModLfo = new Tone.Oscillator();
     this.freqModVca1 = new Tone.Volume();
     this.freqModOffset = new Tone.Add(1);
-    this.freqModVca2 = new Tone.Volume();
+    this.freqModVca2 = new Tone.Multiply();
 
     // Amplitude Modulation
     this.ampModLfo = new Tone.Oscillator();
@@ -134,7 +134,7 @@ class BirdVoice {
     this.vca = new Tone.Volume();
 
     // Expose Inputs
-    this.freqModInitIn = this.freqModVca2.volume;
+    this.freqModInitIn = this.freqModVca2;
     this.freqModAmpIn = this.freqModVca1.volume;
     this.freqModFreqIn = this.freqModLfo.frequency;
 
@@ -142,24 +142,17 @@ class BirdVoice {
     this.ampModFreqIn = this.ampModLfo.frequency;
 
     // Connect modules
-    this.freqModLfo.chain(
-      this.freqModVca1,
-      this.freqModOffset,
-      this.freqModVca2,
-      this.osc.frequency,
-    );
+    this.freqModLfo.connect(this.freqModVca1);
+    this.freqModOffset.connect(this.freqModVca2);
+    this.freqModVca2.connect(this.osc.frequency);
 
-    this.ampModLfo.chain(
-      this.ampModVca1,
-      this.ampModOffset,
-      this.ampModVca2,
-      this.osc.frequency,
-    );
+    // this.ampModLfo.connect(this.ampModVca1);
+    this.ampModVca1.connect(this.ampModOffset);
+    this.ampModOffset.connect(this.ampModVca2);
+    this.ampModVca2.connect(this.osc.frequency);
 
-    this.osc.chain(
-      this.ampModVca2,
-      this.vca
-    );
+    this.osc.connect(this.ampModVca2);
+    this.ampModVca2.connect(this.vca);
 
     this.env.connect(this.vca.volume);
 
@@ -173,8 +166,7 @@ class BirdVoice {
 
   set ifrq(value){
     this._ifrq = value;
-    this.ampModVca2.volume.value = dbScale((value * 7000) + 300);
-    // this.ampModVca2.volume.value = (value * 7000) + 300;
+    this.freqModVca2.value = (value * 7000) + 300;
   }
 
   get ifrq(){
@@ -195,13 +187,12 @@ class Bird {
     this.amp2 = new AmpMod();
     this.amp1 = new AmpMod();
 
-
     this.freq1.output.connect(this.voice.freqModFreqIn);
     this.amp1.output.connect(this.voice.freqModAmpIn);
     this.freq2.output.connect(this.voice.ampModFreqIn);
     this.amp2.output.connect(this.voice.ampModAmpIn);
 
-    this.pad = new Tone.Volume(-60);
+    this.pad = new Tone.Volume(-10);
     this.voice.output.chain(this.pad, masterVolume);
   }
 
