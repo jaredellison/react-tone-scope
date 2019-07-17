@@ -50,9 +50,11 @@ document.querySelector('#ifrq').addEventListener('input', e => {
 });
 
 document.querySelector('#amp-atk').addEventListener('input', e => {
+  window.bird.ampAtk = e.target.value;
 });
 
 document.querySelector('#amp-dcy').addEventListener('input', e => {
+  window.bird.ampDcy = e.target.value;
 });
 
 document.querySelector('#fmod1').addEventListener('input', e => {

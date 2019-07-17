@@ -235,9 +235,23 @@ class Bird {
 
   ////////////////////
   //  amp-atk
+  set ampAtk(value) {
+    this.voice.env.attack = ((value * 900) / 1000) + .001;
+  }
+
+  get ampAtk() {
+    return this.voice.env.attack;
+  }
 
   ////////////////////
   //  amp-dcy
+  set ampDcy(value) {
+    this.voice.env.release = ((value * 900) / 1000) + .001;
+  }
+
+  get ampDcy() {
+    return this.voice.env.decay;
+  }
 
   ////////////////////
   //  fmod1
