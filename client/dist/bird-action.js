@@ -1,11 +1,11 @@
 const startChirping = () => {
   window.bird = new Bird();
+  randomChirp();
   setInterval(() => {
     window.bird.trigger();
   }, 1000);
 
-  // Connect oscilloscope for debugging
-  document.querySelector('tone-oscilloscope').bind(bird.voice.ampModVca1);
+
 };
 
 let started = false;
@@ -19,3 +19,13 @@ volumeSlider.addEventListener('input', e => {
   }
   masterVolume.volume.value = dbScale(e.target.value);
 });
+
+
+let randomChirp = () => {
+  let time = Math.random() * 2500 + 100;
+  console.log('chirp', time);
+  setTimeout(() => {
+    window.bird.trigger();
+    randomChirp();
+  }, time);
+}
