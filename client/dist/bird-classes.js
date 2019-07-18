@@ -35,6 +35,8 @@ masterVolume.toMaster();
 //
 //    Class Definitions
 
+////////////////////////////////////////
+//  FreqMod
 
 class FreqMod {
   constructor(modulation, attack, decay) {
@@ -70,6 +72,9 @@ class FreqMod {
     return this._modulation || 0;
   }
 }
+
+////////////////////////////////////////
+//  AmpMod
 
 class AmpMod {
   constructor(modulation, attack, decay) {
@@ -125,6 +130,9 @@ class AmpMod {
   }
 }
 
+////////////////////////////////////////
+//  BirdVoice
+
 class BirdVoice {
   constructor(attack, decay) {
     // Params
@@ -146,7 +154,7 @@ class BirdVoice {
     // Amplitude Modulation
     // this.ampModLfo = new Tone.Oscillator(220, "sawtooth").toMaster().start();
     this.ampModLfo = new Tone.Oscillator(220, "sine").start();
-    this.ampModVca1 = new Tone.Multiply();
+    this.ampModVca1 = new Tone.Multiply(0);
     this.ampModVca2 = new Tone.Multiply(-1);
     this.ampModOffset = new Tone.Add(-1);
 
@@ -166,6 +174,8 @@ class BirdVoice {
 
     // Connect modules
     this.freqModLfo.connect(this.freqModVca1);
+    // this.freqModLfo.connect(this.freqModOffset);
+    this.freqModVca1.connect(this.freqModOffset);
     this.freqModOffset.connect(this.freqModVca2);
     this.freqModVca2.connect(this.osc.frequency);
 
@@ -196,6 +206,9 @@ class BirdVoice {
     this.env.triggerAttackRelease(0.1);
   }
 }
+
+////////////////////////////////////////
+//  Bird
 
 class Bird {
   constructor() {
@@ -285,12 +298,33 @@ class Bird {
 
   ////////////////////
   //  fmod2
+  set fmod2(value) {
+    this.freq2.modulation = value;
+  }
+
+  get fmod2() {
+    return this.freq2.modulation;
+  }
 
   ////////////////////
   //  atkf2
+  set atkf2(value) {
+    this.freq2.attack = value;
+  }
+
+  get atkf2() {
+    return this.freq2.attack;
+  }
 
   ////////////////////
   //  dcyf2
+  set dcyf2(value) {
+    this.freq2.decay = value;
+  }
+
+  get dcyf2() {
+    return this.freq2.decay;
+  }
 
   ////////////////////
   //  amod1
@@ -324,11 +358,31 @@ class Bird {
 
   ////////////////////
   //  amod2
+  set amod2(value) {
+    this.amp2.modulation = value;
+  }
+
+  get amod2() {
+    return this.amp2.modulation;
+  }
 
   ////////////////////
   //  atka2
+  set atka2(value) {
+    this.amp2.attack = value;
+  }
+
+  get atka2() {
+    return this.amp2.decay;
+  }
 
   ////////////////////
   //  dcya2
+  set dcya2(value) {
+    this.amp2.decay = value;
+  }
 
+  get dcya2() {
+    return this.amp2.decay;
+  }
 }
