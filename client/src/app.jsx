@@ -9,7 +9,7 @@ class App extends React.Component {
     super(props);
     this.state = {
       sources : [
-        {signal: new Tone.Oscillator(440, 'sine').start().toMaster(), name:'Sine Generator'},
+        {signal: new Tone.Oscillator(440, 'sine').start(), name:'Sine Generator'},
         {signal: new Tone.Oscillator(440, 'sawtooth').start(), name:'Sawtooth Generator'}
       ]
     };

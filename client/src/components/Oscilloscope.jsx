@@ -6,9 +6,10 @@ class Oscilloscope extends React.Component {
     super(props);
     this.state = {
       input: null,
-      samples: new Array(256).fill(0),
+      samples: [0],
       angle: 0
     };
+
     this.waveform = new Tone.Waveform(256);
 
     this.animate = this.animate.bind(this);
@@ -31,31 +32,20 @@ class Oscilloscope extends React.Component {
     requestAnimationFrame(this.animate);
   }
 
-  bindInput(sourceName) {
+  bindInput(index) {
     // Find signal source
-    const { sources } = this.props;
+    const newInput = this.props.sources[index];
     const currentIntput = this.state.input;
-    let option;
-
-    for (let i = 0; i < sources.length; i++) {
-      if (sourceName === sources[i].name) {
-        option = sources[i];
-        break;
-      }
-      if (i === sources.length - 1) {
-        return;
-      }
-    }
 
     // Remove previous input
-    if (currentIntput !== null && currentIntput !== option.signal) {
+    if (currentIntput !== null && currentIntput !== newInput) {
       currentIntput.disconnect(this.waveform);
     }
 
     // Connect input
-    option.signal.connect(this.waveform);
+    newInput.signal.connect(this.waveform);
     this.setState({
-      input: option.signal
+      input: newInput.signal
     });
   }
 
@@ -76,7 +66,7 @@ class Oscilloscope extends React.Component {
           <select onChange={this.handleSelect}>
               <option></option>
             {this.props.sources.map((source, i) => (
-              <option key={i}>{source.name}</option>
+              <option key={i} value={i}>{source.name}</option>
             ))}
           </select>
         </div>
