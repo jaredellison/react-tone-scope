@@ -45,7 +45,12 @@ class FreqMod {
     this.modulationScale = 3000;
 
     // Tone modules
-    this.envelope = new Tone.Envelope();
+    this.envelope = new Tone.Envelope({
+      "attack" : 0.1,
+      "decay" : 0.1,
+      "sustain" : 0.1,
+      "release" : 0.1,
+    });
     this.vca = new Tone.Multiply();
     this.multiply = new Tone.Multiply(this.modulationScale);
 
@@ -86,7 +91,7 @@ class AmpMod {
       "attack" : 0.1,
       "decay" : 0.1,
       "sustain" : 0.1,
-      "release" : 0.5,
+      "release" : 0.1,
     });
     this.vca = new Tone.Multiply();
 
@@ -122,7 +127,7 @@ class AmpMod {
   }
 
   set decay(value) {
-    this.envelope.decay = value / 1000;
+    this.envelope.release = value / 1000;
   }
 
   get decay() {
@@ -151,13 +156,13 @@ class BirdVoice {
     this.freqModVca2 = new Tone.Multiply();
 
     // Amplitude Modulation
-    this.ampModLfo = new Tone.Oscillator(220, "sine").start();
+    this.ampModLfo = new Tone.Oscillator(440, "sine").start();
     this.ampModVca1 = new Tone.Multiply(0);
     this.ampModVca2 = new Tone.Multiply(-1);
     this.ampModOffset = new Tone.Add(-1);
 
     // Main Voice
-    this.osc = new Tone.Oscillator(880, "sine").start();
+    this.osc = new Tone.Oscillator(440, "sine").start();
     this.env = new Tone.Envelope();
     this.vca = new Tone.Volume();
 

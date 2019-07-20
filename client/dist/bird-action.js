@@ -23,7 +23,6 @@ volumeSlider.addEventListener('input', e => {
 
 let randomChirp = () => {
   let time = Math.random() * 2500 + 100;
-  console.log('chirp', time);
   setTimeout(() => {
     window.bird.trigger();
     randomChirp();
