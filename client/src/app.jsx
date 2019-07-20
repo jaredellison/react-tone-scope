@@ -1,16 +1,19 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
+import Tone from 'tone';
+
+import Oscilloscope from './components/Oscilloscope.jsx';
 
 class App extends React.Component {
   constructor(props) {
     super(props);
-    this.state = {};
+    this.state = {
+      sources : [{source: new Tone.Oscillator(440, 'sine'), name:'Sine Generator'}]
+    };
   }
 
-  render(props) {
-    return (
-      <div>Hello World!</div>
-    )
+  render() {
+    return <Oscilloscope sources={this.state.sources}/>;
   }
 }
 

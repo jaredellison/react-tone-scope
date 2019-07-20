@@ -1,0 +1,15 @@
+#oscilloscope {
+  display: inline-block;
+  width: 45px;
+  height: 24px;
+  border-radius: 15px;
+  padding: 4px;
+  box-sizing: border-box;
+  background-color: #aaa;
+  overflow: hidden;
+}
+
+canvas {
+  width: 100%;
+  height: 100%;
+}
