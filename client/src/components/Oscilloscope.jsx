@@ -1,16 +1,23 @@
 import React from 'react';
 import Tone from 'tone';
 
+const MAX_SAMPLES = 2 ** 14;
+const SAMPLE_RATE = 44100;
+const VERTICAL_DIVISIONS = 10;
+const HORIZONTAL_DIVISIONS = 8;
+
 class Oscilloscope extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       input: null,
-      samples: [0],
-      verticalScale: 1
+      samples: [],
+      verticalScale: 1,
+      horizontalScale: .001, // seconds per division
+      triggerLevel: 0
     };
 
-    this.waveform = new Tone.Waveform(2 ** 12);
+    this.waveform = new Tone.Waveform(MAX_SAMPLES);
 
     this.animate = this.animate.bind(this);
     this.handleSelect = this.handleSelect.bind(this);
@@ -25,9 +32,29 @@ class Oscilloscope extends React.Component {
     cancelAnimationFrame(this.animationId);
   }
 
+  trimSamples(samples, sampleCount) {
+    const { triggerLevel } = this.state;
+    let i;
+
+    //  TODO: Refactor so trigger search starts from center of sample array
+    for (i = 0; i < samples.length - 1; i++) {
+      if (samples[i] <= triggerLevel && samples[i + 1] >= triggerLevel) {
+        const trimmed =  [...samples.slice(i, i + (sampleCount))];
+        return trimmed;
+      }
+    }
+
+    return samples.slice(0, sampleCount);
+  }
+
   animate() {
+    const totalSamples = this.waveform.getValue();
+
+    const sampleCount = SAMPLE_RATE * VERTICAL_DIVISIONS * this.state.horizontalScale;
+    const samples = this.trimSamples(totalSamples, sampleCount);
+
     this.setState({
-      samples: this.waveform.getValue()
+      samples: samples
     });
     requestAnimationFrame(this.animate);
   }
@@ -63,13 +90,13 @@ class Oscilloscope extends React.Component {
   }
 
   render() {
-    const { samples, verticalScale } = this.state;
+    const { samples, verticalScale, horizontalScale } = this.state;
 
     return (
       <div id="oscilloscope-container">
-        <p>Oscilloscope</p>
-        <Screen samples={samples} verticalScale={verticalScale} />
+        <Screen samples={samples} verticalScale={verticalScale} horizontalScale={horizontalScale}/>
         <div id="controls">
+        <p>Oscilloscope</p>
           <select onChange={this.handleSelect}>
             <option value={-1} />
             {this.props.sources.map((source, i) => (
@@ -90,8 +117,8 @@ class Screen extends React.Component {
     this.state = {
       height: 280,
       width: 350,
-      divsV: 10,
-      divsH: 8
+      divsV: VERTICAL_DIVISIONS,
+      divsH: HORIZONTAL_DIVISIONS
     };
   }
 
@@ -104,11 +131,11 @@ class Screen extends React.Component {
 
   render() {
     const { width, height, divsV, divsH } = this.state;
-    const { samples, verticalScale } = this.props;
+    const { samples, verticalScale, horizontalScale } = this.props;
 
     const traceString = samples.reduce((a, v, i) => {
       const x = this.scale(i, 0, samples.length, 0, width);
-      const y = this.scale(v, -1, 1, 0, height, verticalScale / 4);
+      const y = this.scale(-1 * v, -1, 1, 0, height, verticalScale / 4);
 
       // Set starting position
       if (i === 0) {
