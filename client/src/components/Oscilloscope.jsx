@@ -1,16 +1,23 @@
 import React from 'react';
 import Tone from 'tone';
 
+const MAX_SAMPLES = 2 ** 14;
+const SAMPLE_RATE = 44100;
+const VERTICAL_DIVISIONS = 10;
+const HORIZONTAL_DIVISIONS = 8;
+
 class Oscilloscope extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       input: null,
-      samples: [0],
-      angle: 0
+      samples: [],
+      verticalScale: 1,
+      horizontalScale: .001, // seconds per division
+      triggerLevel: 0
     };
 
-    this.waveform = new Tone.Waveform(256);
+    this.waveform = new Tone.Waveform(MAX_SAMPLES);
 
     this.animate = this.animate.bind(this);
     this.handleSelect = this.handleSelect.bind(this);
@@ -25,28 +32,54 @@ class Oscilloscope extends React.Component {
     cancelAnimationFrame(this.animationId);
   }
 
+  trimSamples(samples, sampleCount) {
+    const { triggerLevel } = this.state;
+    let i;
+
+    //  TODO: Refactor so trigger search starts from center of sample array
+    for (i = 0; i < samples.length - 1; i++) {
+      if (samples[i] <= triggerLevel && samples[i + 1] >= triggerLevel) {
+        const trimmed =  [...samples.slice(i, i + (sampleCount))];
+        return trimmed;
+      }
+    }
+
+    return samples.slice(0, sampleCount);
+  }
+
   animate() {
+    const totalSamples = this.waveform.getValue();
+
+    const sampleCount = SAMPLE_RATE * VERTICAL_DIVISIONS * this.state.horizontalScale;
+    const samples = this.trimSamples(totalSamples, sampleCount);
+
     this.setState({
-      samples: this.waveform.getValue()
+      samples: samples
     });
     requestAnimationFrame(this.animate);
   }
 
   bindInput(index) {
     // Find signal source
-    const newInput = this.props.sources[index];
-    const currentIntput = this.state.input;
+    const currentInput = this.state.input;
+    const newInput = this.props.sources[index] || null;
 
     // Remove previous input
-    if (currentIntput !== null && currentIntput !== newInput) {
-      currentIntput.disconnect(this.waveform);
+    if (currentInput !== null && currentInput !== newInput) {
+      currentInput.disconnect(this.waveform);
     }
 
-    // Connect input
-    newInput.signal.connect(this.waveform);
-    this.setState({
-      input: newInput.signal
-    });
+    if (newInput !== null) {
+      // Connect input
+      newInput.signal.connect(this.waveform);
+      this.setState({
+        input: newInput.signal
+      });
+    } else {
+      this.setState({
+        input: newInput
+      });
+    }
   }
 
   handleSelect(e) {
@@ -56,17 +89,20 @@ class Oscilloscope extends React.Component {
     this.bindInput(e.target.value);
   }
 
-
   render() {
+    const { samples, verticalScale, horizontalScale } = this.state;
+
     return (
       <div id="oscilloscope-container">
-        <p>Oscilloscope</p>
-        <Screen samples={this.state.samples} />
+        <Screen samples={samples} verticalScale={verticalScale} horizontalScale={horizontalScale}/>
         <div id="controls">
+        <p>Oscilloscope</p>
           <select onChange={this.handleSelect}>
-              <option></option>
+            <option value={-1} />
             {this.props.sources.map((source, i) => (
-              <option key={i} value={i}>{source.name}</option>
+              <option key={i} value={i}>
+                {source.name}
+              </option>
             ))}
           </select>
         </div>
@@ -78,55 +114,105 @@ class Oscilloscope extends React.Component {
 class Screen extends React.Component {
   constructor(props) {
     super(props);
-    this.canvasRef = React.createRef();
+    this.state = {
+      height: 280,
+      width: 350,
+      divsV: VERTICAL_DIVISIONS,
+      divsH: HORIZONTAL_DIVISIONS
+    };
   }
 
-  componentDidUpdate() {
-    const { samples } = this.props;
-    const canvas = this.canvasRef.current;
-    const ctx = canvas.getContext('2d');
-    const width = canvas.width;
-    const height = canvas.height;
-    const lineWidth = 2;
-
-    ctx.clearRect(0, 0, width, height);
-    ctx.beginPath();
-    ctx.lineWidth = lineWidth;
-    ctx.lineCap = 'round';
-    ctx.strokeStyle = 'lightyellow';
-
-    samples.forEach((v, i) => {
-      const x = this.scale(i, 0, samples.length, 0, width);
-      const y = this.scale(v, -1, 1, 0, width);
-      if (i === 0) {
-        ctx.moveTo(x, y);
-      } else {
-        ctx.lineTo(x, y);
-      }
-    });
-
-    ctx.stroke();
-  }
-
-  scale(n, inMin, inMax, outMin, outMax) {
+  scale(n, inMin, inMax, outMin, outMax, factor = 1) {
     const inRange = inMax - inMin;
     const outRange = outMax - outMin;
-    const ratio = (n - inMin) / inRange;
+    const ratio = (n * factor - inMin) / inRange;
     return ratio * outRange + outMin;
   }
 
   render() {
+    const { width, height, divsV, divsH } = this.state;
+    const { samples, verticalScale, horizontalScale } = this.props;
+
+    const traceString = samples.reduce((a, v, i) => {
+      const x = this.scale(i, 0, samples.length, 0, width);
+      const y = this.scale(-1 * v, -1, 1, 0, height, verticalScale / 4);
+
+      // Set starting position
+      if (i === 0) {
+        return a + `M ${x}, ${y} `;
+      } else {
+        return a + `L ${x}, ${y} `;
+      }
+    }, '');
+
     return (
-      <canvas
-        ref={this.canvasRef}
-        id="oscilloscope-screen"
-        width="300"
-        height="300"
+      <svg
+        viewBox={`0 0 ${width} ${height}`}
+        width={width}
+        height={height}
+        xmlns="http://www.w3.org/2000/svg"
+        stroke="black"
+        fill="white"
       >
-        signal visualization
-      </canvas>
+        <rect width={width} height={height} rx="5" />
+        <Divisions
+          orientation={'vertical'}
+          total={10}
+          width={width}
+          height={height}
+        />
+        <Divisions
+          orientation={'horizontal'}
+          total={8}
+          width={width}
+          height={height}
+        />
+        <path
+          d={traceString}
+          stroke="blue"
+          strokeWidth="2"
+          strokeLinecap="round"
+          fill="transparent"
+        />
+      </svg>
     );
   }
 }
+
+const Divisions = ({ orientation, total, width, height }) => {
+  let divs = new Array(total).fill(null);
+
+  if (orientation === 'vertical') {
+    divs = divs.map((v, i) => {
+      const position = (i / total) * width;
+      return (
+        <line
+          key={i}
+          x1={position}
+          y1="0"
+          x2={position}
+          y2={height}
+          stroke={i === total / 2 ? 'grey' : 'lightgrey'}
+        />
+      );
+    });
+  } else if (orientation === 'horizontal') {
+    divs = divs.fill(null).map((v, i) => {
+      const position = (i / total) * height;
+      return (
+        <line
+          key={i}
+          x1="0"
+          y1={position}
+          x2={width}
+          y2={position}
+          stroke={i === total / 2 ? 'grey' : 'lightgrey'}
+        />
+      );
+    });
+  }
+
+  return divs;
+};
 
 export default Oscilloscope;
