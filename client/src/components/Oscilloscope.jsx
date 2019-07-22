@@ -10,7 +10,7 @@ class Oscilloscope extends React.Component {
       angle: 0
     };
 
-    this.waveform = new Tone.Waveform(256);
+    this.waveform = new Tone.Waveform(2 ** 12);
 
     this.animate = this.animate.bind(this);
     this.handleSelect = this.handleSelect.bind(this);
@@ -34,19 +34,25 @@ class Oscilloscope extends React.Component {
 
   bindInput(index) {
     // Find signal source
-    const newInput = this.props.sources[index];
-    const currentIntput = this.state.input;
+    const currentInput = this.state.input;
+    const newInput = this.props.sources[index] || null;
 
     // Remove previous input
-    if (currentIntput !== null && currentIntput !== newInput) {
-      currentIntput.disconnect(this.waveform);
+    if (currentInput !== null && currentInput !== newInput) {
+      currentInput.disconnect(this.waveform);
     }
 
-    // Connect input
-    newInput.signal.connect(this.waveform);
-    this.setState({
-      input: newInput.signal
-    });
+    if (newInput !== null) {
+      // Connect input
+      newInput.signal.connect(this.waveform);
+      this.setState({
+        input: newInput.signal
+      });
+    } else {
+      this.setState({
+        input: newInput
+      });
+    }
   }
 
   handleSelect(e) {
@@ -56,7 +62,6 @@ class Oscilloscope extends React.Component {
     this.bindInput(e.target.value);
   }
 
-
   render() {
     return (
       <div id="oscilloscope-container">
@@ -64,9 +69,11 @@ class Oscilloscope extends React.Component {
         <Screen samples={this.state.samples} />
         <div id="controls">
           <select onChange={this.handleSelect}>
-              <option></option>
+            <option value={-1}></option>
             {this.props.sources.map((source, i) => (
-              <option key={i} value={i}>{source.name}</option>
+              <option key={i} value={i}>
+                {source.name}
+              </option>
             ))}
           </select>
         </div>
@@ -78,34 +85,12 @@ class Oscilloscope extends React.Component {
 class Screen extends React.Component {
   constructor(props) {
     super(props);
-    this.canvasRef = React.createRef();
-  }
-
-  componentDidUpdate() {
-    const { samples } = this.props;
-    const canvas = this.canvasRef.current;
-    const ctx = canvas.getContext('2d');
-    const width = canvas.width;
-    const height = canvas.height;
-    const lineWidth = 2;
-
-    ctx.clearRect(0, 0, width, height);
-    ctx.beginPath();
-    ctx.lineWidth = lineWidth;
-    ctx.lineCap = 'round';
-    ctx.strokeStyle = 'lightyellow';
-
-    samples.forEach((v, i) => {
-      const x = this.scale(i, 0, samples.length, 0, width);
-      const y = this.scale(v, -1, 1, 0, width);
-      if (i === 0) {
-        ctx.moveTo(x, y);
-      } else {
-        ctx.lineTo(x, y);
-      }
-    });
-
-    ctx.stroke();
+    this.state = {
+      height: 350,
+      width: 350,
+      divsV: 8,
+      divsH: 8
+    };
   }
 
   scale(n, inMin, inMax, outMin, outMax) {
@@ -116,15 +101,66 @@ class Screen extends React.Component {
   }
 
   render() {
+    const { width, height, divsV, divsH } = this.state;
+    const { samples } = this.props;
+
+    const verticalDivs = new Array(divsV).fill(null).map((v, i) => {
+      const position = (i / divsV) * width;
+      return (
+        <line
+          x1={position}
+          y1="0"
+          x2={position}
+          y2={height}
+          stroke={i === divsV / 2 ? 'grey' : 'lightgrey'}
+        />
+      );
+    });
+
+    const horizontalDivs = new Array(divsH).fill(null).map((v, i) => {
+      const position = (i / divsH) * width;
+      return (
+        <line
+          x1="0"
+          y1={position}
+          x2={width}
+          y2={position}
+          stroke={i === divsH / 2 ? 'grey' : 'lightgrey'}
+        />
+      );
+    });
+
+    const traceString = samples.reduce((a, v, i) => {
+      const x = this.scale(i, 0, samples.length, 0, width);
+      const y = this.scale(v, -1, 1, 0, width);
+
+      if (i === 0) {
+        return a + `M ${x}, ${y} `;
+      } else {
+        return a + `L ${x}, ${y} `;
+      }
+    }, '');
+
     return (
-      <canvas
-        ref={this.canvasRef}
-        id="oscilloscope-screen"
-        width="300"
-        height="300"
+      <svg
+        viewBox={`0 0 ${width} ${height}`}
+        width={width}
+        height={height}
+        xmlns="http://www.w3.org/2000/svg"
+        stroke="black"
+        fill="white"
       >
-        signal visualization
-      </canvas>
+        <rect width={width} height={height} rx="5" />
+        {verticalDivs}
+        {horizontalDivs}
+        <path
+          d={traceString}
+          stroke="blue"
+          strokeWidth="2"
+          strokeLinecap="round"
+          fill="transparent"
+        />
+      </svg>
     );
   }
 }
