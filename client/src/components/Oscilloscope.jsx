@@ -7,7 +7,7 @@ class Oscilloscope extends React.Component {
     this.state = {
       input: null,
       samples: [0],
-      angle: 0
+      verticalScale: 1
     };
 
     this.waveform = new Tone.Waveform(2 ** 12);
@@ -63,13 +63,15 @@ class Oscilloscope extends React.Component {
   }
 
   render() {
+    const { samples, verticalScale } = this.state;
+
     return (
       <div id="oscilloscope-container">
         <p>Oscilloscope</p>
-        <Screen samples={this.state.samples} />
+        <Screen samples={samples} verticalScale={verticalScale} />
         <div id="controls">
           <select onChange={this.handleSelect}>
-            <option value={-1}></option>
+            <option value={-1} />
             {this.props.sources.map((source, i) => (
               <option key={i} value={i}>
                 {source.name}
@@ -86,54 +88,29 @@ class Screen extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      height: 350,
+      height: 280,
       width: 350,
-      divsV: 8,
+      divsV: 10,
       divsH: 8
     };
   }
 
-  scale(n, inMin, inMax, outMin, outMax) {
+  scale(n, inMin, inMax, outMin, outMax, factor = 1) {
     const inRange = inMax - inMin;
     const outRange = outMax - outMin;
-    const ratio = (n - inMin) / inRange;
+    const ratio = (n * factor - inMin) / inRange;
     return ratio * outRange + outMin;
   }
 
   render() {
     const { width, height, divsV, divsH } = this.state;
-    const { samples } = this.props;
-
-    const verticalDivs = new Array(divsV).fill(null).map((v, i) => {
-      const position = (i / divsV) * width;
-      return (
-        <line
-          x1={position}
-          y1="0"
-          x2={position}
-          y2={height}
-          stroke={i === divsV / 2 ? 'grey' : 'lightgrey'}
-        />
-      );
-    });
-
-    const horizontalDivs = new Array(divsH).fill(null).map((v, i) => {
-      const position = (i / divsH) * width;
-      return (
-        <line
-          x1="0"
-          y1={position}
-          x2={width}
-          y2={position}
-          stroke={i === divsH / 2 ? 'grey' : 'lightgrey'}
-        />
-      );
-    });
+    const { samples, verticalScale } = this.props;
 
     const traceString = samples.reduce((a, v, i) => {
       const x = this.scale(i, 0, samples.length, 0, width);
-      const y = this.scale(v, -1, 1, 0, width);
+      const y = this.scale(v, -1, 1, 0, height, verticalScale / 4);
 
+      // Set starting position
       if (i === 0) {
         return a + `M ${x}, ${y} `;
       } else {
@@ -151,8 +128,18 @@ class Screen extends React.Component {
         fill="white"
       >
         <rect width={width} height={height} rx="5" />
-        {verticalDivs}
-        {horizontalDivs}
+        <Divisions
+          orientation={'vertical'}
+          total={10}
+          width={width}
+          height={height}
+        />
+        <Divisions
+          orientation={'horizontal'}
+          total={8}
+          width={width}
+          height={height}
+        />
         <path
           d={traceString}
           stroke="blue"
@@ -164,5 +151,41 @@ class Screen extends React.Component {
     );
   }
 }
+
+const Divisions = ({ orientation, total, width, height }) => {
+  let divs = new Array(total).fill(null);
+
+  if (orientation === 'vertical') {
+    divs = divs.map((v, i) => {
+      const position = (i / total) * width;
+      return (
+        <line
+          key={i}
+          x1={position}
+          y1="0"
+          x2={position}
+          y2={height}
+          stroke={i === total / 2 ? 'grey' : 'lightgrey'}
+        />
+      );
+    });
+  } else if (orientation === 'horizontal') {
+    divs = divs.fill(null).map((v, i) => {
+      const position = (i / total) * height;
+      return (
+        <line
+          key={i}
+          x1="0"
+          y1={position}
+          x2={width}
+          y2={position}
+          stroke={i === total / 2 ? 'grey' : 'lightgrey'}
+        />
+      );
+    });
+  }
+
+  return divs;
+};
 
 export default Oscilloscope;
