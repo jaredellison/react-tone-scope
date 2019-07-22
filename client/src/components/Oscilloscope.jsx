@@ -12,7 +12,7 @@ class Oscilloscope extends React.Component {
     this.state = {
       input: null,
       samples: [],
-      verticalScale: 1,
+      verticalScale: 4,
       horizontalScale: .001, // seconds per division
       triggerLevel: 0
     };
@@ -32,26 +32,34 @@ class Oscilloscope extends React.Component {
     cancelAnimationFrame(this.animationId);
   }
 
-  trimSamples(samples, sampleCount) {
-    const { triggerLevel } = this.state;
-    let i;
+  trimSamples(samples, sampleCount, triggerLevel) {
+    // Bitwise shift twice because samples are stereo pairs
+    let halfTotalSamples = MAX_SAMPLES >> 2;
+    let halfTrimmedSamples = sampleCount >> 2;
+    // Start upper and lower around midpoint of totalSamples
+    let lower = halfTotalSamples;
+    let upper = 1 + halfTotalSamples;
 
-    //  TODO: Refactor so trigger search starts from center of sample array
-    for (i = 0; i < samples.length - 1; i++) {
-      if (samples[i] <= triggerLevel && samples[i + 1] >= triggerLevel) {
-        const trimmed =  [...samples.slice(i, i + (sampleCount))];
-        return trimmed;
+    while (lower >= 0 && upper <= MAX_SAMPLES) {
+      if (samples[lower] <= triggerLevel && samples[lower + 1] >= triggerLevel) {
+        return samples.slice(lower - halfTrimmedSamples, lower + halfTrimmedSamples);
       }
+      if (samples[upper] <= triggerLevel && samples[upper + 1] >= triggerLevel) {
+        return samples.slice(upper - halfTrimmedSamples, upper + halfTrimmedSamples);
+      }
+      lower--;
+      upper++;
     }
 
-    return samples.slice(0, sampleCount);
+    // No match found, a chunk of samples around the midpoint
+    return samples.slice(halfTrimmedSamples/2, halfTotalSamples + (halfTrimmedSamples/2));
   }
 
   animate() {
     const totalSamples = this.waveform.getValue();
-
+    const { triggerLevel } = this.state;
     const sampleCount = SAMPLE_RATE * VERTICAL_DIVISIONS * this.state.horizontalScale;
-    const samples = this.trimSamples(totalSamples, sampleCount);
+    const samples = this.trimSamples(totalSamples, sampleCount, triggerLevel);
 
     this.setState({
       samples: samples
