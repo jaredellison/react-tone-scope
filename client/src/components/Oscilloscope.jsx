@@ -1,6 +1,8 @@
 import React from 'react';
 import Tone from 'tone';
 
+import Control from './Control.jsx';
+
 const MAX_SAMPLES = 2 ** 14;
 const SAMPLE_RATE = 44100;
 const VERTICAL_DIVISIONS = 10;
@@ -113,6 +115,14 @@ class Oscilloscope extends React.Component {
               </option>
             ))}
           </select>
+          <Control
+          setterFunction={() => {}}
+          id="testControl"
+          label="Test Control"
+          upperLimit={0}
+          lowerLimit={100}
+          step={1}
+          />
         </div>
       </div>
     );
