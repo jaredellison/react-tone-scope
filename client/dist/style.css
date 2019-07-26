@@ -4,6 +4,7 @@
   padding: 1em;
   box-sizing: border-box;
   border: 1px solid black;
+  font-family: sans-serif;
 }
 
 #oscilloscope-screen {
@@ -26,4 +27,18 @@ canvas {
   margin: 0 1em;
   display: inline-block;
   vertical-align: top;
+}
+
+.control-label {
+  font-size: .7em;
+  display: block;
+}
+
+.control-input {
+  border: none;
+  text-align: center;
+}
+
+.control-container {
+  margin: .4em;
 }

@@ -100,29 +100,60 @@ class Oscilloscope extends React.Component {
   }
 
   render() {
-    const { samples, verticalScale, horizontalScale } = this.state;
+    const { samples, verticalScale, horizontalScale, triggerLevel } = this.state;
 
     return (
       <div id="oscilloscope-container">
         <Screen samples={samples} verticalScale={verticalScale} horizontalScale={horizontalScale}/>
         <div id="controls">
         <p>Oscilloscope</p>
+          <label className="control-label">Input Source</label>
+
           <select onChange={this.handleSelect}>
-            <option value={-1} />
+            <option value={-1}> - none -</option>
             {this.props.sources.map((source, i) => (
               <option key={i} value={i}>
                 {source.name}
               </option>
             ))}
           </select>
+
           <Control
-          setterFunction={() => {}}
-          id="testControl"
-          label="Test Control"
-          upperLimit={0}
-          lowerLimit={100}
-          step={1}
+          setterFunction={(value) => {
+            this.setState({verticalScale: value});
+          }}
+          id="vertical-scale-control"
+          label="Vertical Scale"
+          lowerLimit={0}
+          upperLimit={10}
+          step={0.1}
+          value={verticalScale}
           />
+
+          <Control
+          setterFunction={(value) => {
+            this.setState({horizontalScale: value});
+          }}
+          id="horizontal-scale-control"
+          label="Horizontal Scale"
+          lowerLimit={0}
+          upperLimit={1}
+          step={0.0001}
+          value={horizontalScale}
+          />
+
+          <Control
+          setterFunction={(value) => {
+            this.setState({triggerLevel: value});
+          }}
+          id="trigger-level-control"
+          label="Trigger Level"
+          lowerLimit={-10}
+          upperLimit={10}
+          step={0.01}
+          value={triggerLevel}
+          />
+
         </div>
       </div>
     );
