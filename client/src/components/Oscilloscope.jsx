@@ -20,7 +20,8 @@ class Oscilloscope extends React.Component {
       triggerLevel: 0,
       divsH: HORIZONTAL_DIVISIONS,
       divsV: VERTICAL_DIVISIONS,
-      showTriggerLine: false
+      showTriggerLine: false,
+      triggerClearTimeout: null
     };
 
     this.waveform = new Tone.Waveform(MAX_SAMPLES);
@@ -178,8 +179,11 @@ class Oscilloscope extends React.Component {
 
           <Control
             setterFunction={value => {
-              this.setState({ triggerLevel: value, showTriggerLine: true });
-              setTimeout(() => {this.setState({ showTriggerLine: false })}, 2000)
+              // Reset timer if it has already been set
+              const { triggerClearTimeout } = this.state;
+              if (triggerClearTimeout !== null) clearTimeout(triggerClearTimeout);
+              const id = setTimeout(() => {this.setState({ showTriggerLine: false, triggerClearTimeout: null })}, 1000);
+              this.setState({ triggerLevel: value, showTriggerLine: true, triggerClearTimeout: id });
             }}
             id="trigger-level-control"
             label="Trigger Level"
