@@ -124,8 +124,6 @@ class Oscilloscope extends React.Component {
           }}
           id="vertical-scale-control"
           label="Vertical Scale"
-          lowerLimit={0}
-          upperLimit={10}
           step={0.1}
           value={verticalScale}
           />
@@ -136,8 +134,6 @@ class Oscilloscope extends React.Component {
           }}
           id="horizontal-scale-control"
           label="Horizontal Scale"
-          lowerLimit={0}
-          upperLimit={1}
           step={0.0001}
           value={horizontalScale}
           />
@@ -148,9 +144,7 @@ class Oscilloscope extends React.Component {
           }}
           id="trigger-level-control"
           label="Trigger Level"
-          lowerLimit={-10}
-          upperLimit={10}
-          step={0.01}
+          step={0.1}
           value={triggerLevel}
           />
 
