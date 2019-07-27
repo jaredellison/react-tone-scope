@@ -4,11 +4,10 @@ const Control = ({
   setterFunction,
   id,
   label,
+  unit,
   value,
   step
 }) => {
-  step = step || 1;
-
   const [editing, setEditing] = useState(false);
   const [tempValue, setTempValue] = useState('');
   const inputEl = useRef(null);
@@ -26,7 +25,7 @@ const Control = ({
   return (
     <div className="control-container">
       <label className="control-label" htmlFor={id}>
-        {label}
+        {label} <span className="control-label-unit">{unit}</span>
       </label>
       <div className="control-input-container">
 
@@ -47,7 +46,7 @@ const Control = ({
           minLength="4"
           maxLength="8"
           size="10"
-          value={editing ? tempValue : value.toFixed(3)}
+          value={editing ? tempValue : value.toFixed(2)}
 
           onFocus={() => {
             if (!editing) setEditing(true);

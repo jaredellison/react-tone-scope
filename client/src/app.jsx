@@ -10,7 +10,17 @@ class App extends React.Component {
     this.state = {
       sources : [
         {signal: new Tone.Oscillator(440, 'sine').start(), name:'Sine Generator'},
-        {signal: new Tone.Oscillator(440, 'sawtooth').start(), name:'Sawtooth Generator'}
+        {signal: new Tone.Oscillator(440, 'sawtooth').start(), name:'Sawtooth Generator'},
+        {signal: new Tone.Player({
+          "url" : "/chirp.mp3",
+          "autostart" : true,
+          "loop": true
+        }), name:'Sweep Sample'},
+        {signal: new Tone.Player({
+          "url" : "/hello.mp3",
+          "autostart" : true,
+          "loop": true
+        }), name:'Voice Sample'}
       ]
     };
   }

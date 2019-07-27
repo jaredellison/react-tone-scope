@@ -29,6 +29,10 @@ canvas {
   vertical-align: top;
 }
 
+.control-container {
+  margin: .4em 0;
+}
+
 .control-label {
   font-size: .7em;
   display: block;
@@ -39,6 +43,7 @@ canvas {
   text-align: center;
 }
 
-.control-container {
-  margin: .4em 0;
+.control-label-unit {
+  color: grey;
+  float: right;
 }
