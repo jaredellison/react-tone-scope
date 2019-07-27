@@ -3,6 +3,7 @@ import Tone from 'tone';
 
 import Control from './Control.jsx';
 import Screen from './Screen.jsx';
+import Volume from './Volume.jsx';
 
 const MAX_SAMPLES = 2 ** 14;
 const SAMPLE_RATE = 44100;
@@ -21,7 +22,8 @@ class Oscilloscope extends React.Component {
       divsH: HORIZONTAL_DIVISIONS,
       divsV: VERTICAL_DIVISIONS,
       showTriggerLine: false,
-      triggerClearTimeout: null
+      triggerClearTimeout: null,
+      audioStarted: false
     };
 
     this.waveform = new Tone.Waveform(MAX_SAMPLES);
@@ -116,6 +118,7 @@ class Oscilloscope extends React.Component {
   handleSelect(e) {
     if (Tone.context.state !== 'running') {
       Tone.context.resume();
+      this.setState({audioStarted: true})
     }
     this.bindInput(e.target.value);
   }
@@ -128,7 +131,9 @@ class Oscilloscope extends React.Component {
       divsV,
       divsH,
       showTriggerLine,
-      triggerLevel
+      triggerLevel,
+      input,
+      audioStarted
     } = this.state;
 
     return (
@@ -191,6 +196,8 @@ class Oscilloscope extends React.Component {
             step={0.1}
             value={triggerLevel}
           />
+
+          <Volume input={input} audioStarted={audioStarted}></Volume>
         </div>
       </div>
     );
