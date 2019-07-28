@@ -23,10 +23,12 @@ class Oscilloscope extends React.Component {
       divsV: VERTICAL_DIVISIONS,
       showTriggerLine: false,
       triggerClearTimeout: null,
-      audioStarted: false
+      volumeMute: true,
+      volumeValue: 0
     };
 
     this.waveform = new Tone.Waveform(MAX_SAMPLES);
+    this.volume = new Tone.Volume({ volume: 0, mute: true }).toMaster();
 
     this.animate = this.animate.bind(this);
     this.handleSelect = this.handleSelect.bind(this);
@@ -83,7 +85,7 @@ class Oscilloscope extends React.Component {
     const totalSamples = this.waveform.getValue();
     const { triggerLevel } = this.state;
     const sampleCount =
-      SAMPLE_RATE * VERTICAL_DIVISIONS * this.state.horizontalScale / 1000;
+      (SAMPLE_RATE * VERTICAL_DIVISIONS * this.state.horizontalScale) / 1000;
     const samples = this.trimSamples(totalSamples, sampleCount, triggerLevel);
 
     this.setState({
@@ -100,11 +102,13 @@ class Oscilloscope extends React.Component {
     // Remove previous input
     if (currentInput !== null && currentInput !== newInput) {
       currentInput.disconnect(this.waveform);
+      currentInput.disconnect(this.volume);
     }
 
     if (newInput !== null) {
       // Connect input
       newInput.signal.connect(this.waveform);
+      newInput.signal.connect(this.volume);
       this.setState({
         input: newInput.signal
       });
@@ -118,7 +122,7 @@ class Oscilloscope extends React.Component {
   handleSelect(e) {
     if (Tone.context.state !== 'running') {
       Tone.context.resume();
-      this.setState({audioStarted: true})
+      this.setState({ audioStarted: true });
     }
     this.bindInput(e.target.value);
   }
@@ -132,8 +136,8 @@ class Oscilloscope extends React.Component {
       divsH,
       showTriggerLine,
       triggerLevel,
-      input,
-      audioStarted
+      volumeMute,
+      volumeValue
     } = this.state;
 
     return (
@@ -186,9 +190,19 @@ class Oscilloscope extends React.Component {
             setterFunction={value => {
               // Reset timer if it has already been set
               const { triggerClearTimeout } = this.state;
-              if (triggerClearTimeout !== null) clearTimeout(triggerClearTimeout);
-              const id = setTimeout(() => {this.setState({ showTriggerLine: false, triggerClearTimeout: null })}, 1000);
-              this.setState({ triggerLevel: value, showTriggerLine: true, triggerClearTimeout: id });
+              if (triggerClearTimeout !== null)
+                clearTimeout(triggerClearTimeout);
+              const id = setTimeout(() => {
+                this.setState({
+                  showTriggerLine: false,
+                  triggerClearTimeout: null
+                });
+              }, 1000);
+              this.setState({
+                triggerLevel: value,
+                showTriggerLine: true,
+                triggerClearTimeout: id
+              });
             }}
             id="trigger-level-control"
             label="Trigger Level"
@@ -197,7 +211,20 @@ class Oscilloscope extends React.Component {
             value={triggerLevel}
           />
 
-          <Volume input={input} audioStarted={audioStarted}></Volume>
+          <Volume
+            mute={volumeMute}
+            value={volumeValue}
+            setMute={value => {
+              this.setState({ volumeMute: value });
+              this.volume.mute = value;
+            }}
+            setValue={value => {
+              const scaled = Math.log(value) * 24;
+              this.setState({ volumeValue: value, volumeMute: false });
+              this.volume.mute = false;
+              this.volume.volume.value = scaled;
+            }}
+          />
         </div>
       </div>
     );
