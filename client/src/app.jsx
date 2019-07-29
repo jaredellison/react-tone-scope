@@ -11,6 +11,7 @@ class App extends React.Component {
       sources : [
         {signal: new Tone.Oscillator(440, 'sine').start(), name:'Sine Generator'},
         {signal: new Tone.Oscillator(440, 'sawtooth').start(), name:'Sawtooth Generator'},
+        {signal: new Tone.Oscillator(440, 'square').start(), name:'Square Wave Generator'},
         {signal: new Tone.Player({
           "url" : "/audio/chirp.mp3",
           "autostart" : true,
