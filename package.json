@@ -25,7 +25,7 @@
     "wepack": "0.0.1"
   },
   "dependencies": {
-    "cypress": "^3.4.0",
+    "cypress": "^3.4.1",
     "enzyme": "^3.10.0",
     "express": "^4.17.1",
     "jest": "^24.8.0",
