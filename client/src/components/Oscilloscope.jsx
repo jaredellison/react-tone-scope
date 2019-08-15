@@ -5,6 +5,8 @@ import Control from './Control.jsx';
 import Screen from './Screen.jsx';
 import Volume from './Volume.jsx';
 
+import { trimSamples } from '../utils/utils.js';
+
 const MAX_SAMPLES = 2 ** 14;
 const SAMPLE_RATE = 44100;
 const VERTICAL_DIVISIONS = 10;
@@ -43,50 +45,12 @@ class Oscilloscope extends React.Component {
     cancelAnimationFrame(this.animationId);
   }
 
-  trimSamples(samples, sampleCount, triggerLevel) {
-    // Bitwise shift twice because samples are stereo pairs
-    let halfTotalSamples = MAX_SAMPLES >> 2;
-    let halfTrimmedSamples = sampleCount >> 2;
-    // Start upper and lower around midpoint of totalSamples
-    let lower = halfTotalSamples;
-    let upper = 1 + halfTotalSamples;
-
-    while (lower >= 0 && upper <= MAX_SAMPLES) {
-      if (
-        samples[lower] <= triggerLevel &&
-        samples[lower + 1] >= triggerLevel
-      ) {
-        return samples.slice(
-          lower - halfTrimmedSamples,
-          lower + halfTrimmedSamples
-        );
-      }
-      if (
-        samples[upper] <= triggerLevel &&
-        samples[upper + 1] >= triggerLevel
-      ) {
-        return samples.slice(
-          upper - halfTrimmedSamples,
-          upper + halfTrimmedSamples
-        );
-      }
-      lower--;
-      upper++;
-    }
-
-    // No match found, a chunk of samples around the midpoint
-    return samples.slice(
-      halfTrimmedSamples / 2,
-      halfTotalSamples + halfTrimmedSamples / 2
-    );
-  }
-
   animate() {
     const totalSamples = this.waveform.getValue();
     const { triggerLevel } = this.state;
     const sampleCount =
       (SAMPLE_RATE * VERTICAL_DIVISIONS * this.state.horizontalScale) / 1000;
-    const samples = this.trimSamples(totalSamples, sampleCount, triggerLevel);
+    const samples = trimSamples(totalSamples, sampleCount, MAX_SAMPLES, triggerLevel);
 
     this.setState({
       samples: samples
