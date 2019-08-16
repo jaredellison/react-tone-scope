@@ -5,9 +5,16 @@ import Control from './Control.jsx';
 import Screen from './Screen.jsx';
 import Volume from './Volume.jsx';
 
-import { trimSamples } from '../utils/utils.js';
+import { trimSamples, trimSampleArray, findCrossover } from '../utils/utils.js';
 
-const MAX_SAMPLES = 2 ** 14;
+// MAX_SAMPLES Must be a power of 2
+// Increasing MAX_SAMPLES will increase horizontal resolution but also the
+// latency of rendering.
+// 2 ** 10 or 1024 samples has good latency and is okay for most of audio range.
+// 2 ** 14 or 16,384 samples provides better resolution for low frequencies but
+//  show may noticable latency in rendering.
+const MAX_SAMPLES = 2 ** 10;
+
 const SAMPLE_RATE = 44100;
 const VERTICAL_DIVISIONS = 10;
 const HORIZONTAL_DIVISIONS = 8;
@@ -48,13 +55,16 @@ class Oscilloscope extends React.Component {
   animate() {
     const totalSamples = this.waveform.getValue();
     const { triggerLevel } = this.state;
-    const sampleCount =
+    const trimLength =
       (SAMPLE_RATE * VERTICAL_DIVISIONS * this.state.horizontalScale) / 1000;
-    const samples = trimSamples(totalSamples, sampleCount, MAX_SAMPLES, triggerLevel);
 
-    this.setState({
-      samples: samples
-    });
+    if (totalSamples.length > 0) {
+      const crossover = findCrossover(totalSamples, triggerLevel);
+      const samples = trimSamples(totalSamples, crossover, trimLength);
+      this.setState({
+        samples: samples
+      });
+    }
     requestAnimationFrame(this.animate);
   }
 

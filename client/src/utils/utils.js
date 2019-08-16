@@ -1,31 +1,38 @@
-export const trimSamples = (samples, sampleCount, maxSamples, triggerLevel) => {
-  // Bitwise shift twice because samples are stereo pairs
-  let halfTotalSamples = maxSamples >> 2;
-  let halfTrimmedSamples = sampleCount >> 2;
-  // Start upper and lower around midpoint of totalSamples
-  let lower = halfTotalSamples;
-  let upper = 1 + halfTotalSamples;
+export const findCrossover = (samples, triggerLevel) => {
+  if (samples.length === 0) throw new Error('Empty sample array');
 
-  while (lower >= 0 && upper <= maxSamples) {
+  let midIndex = samples.length >> 1;
+  // Start upper and lower around midpoint of totalSamples
+  let lower = midIndex;
+  let upper = 1 + midIndex;
+
+  while (lower >= 0 && upper <= samples.length) {
     if (samples[lower] <= triggerLevel && samples[lower + 1] >= triggerLevel) {
-      return samples.slice(
-        lower - halfTrimmedSamples,
-        lower + halfTrimmedSamples
-      );
+      return lower;
     }
     if (samples[upper] <= triggerLevel && samples[upper + 1] >= triggerLevel) {
-      return samples.slice(
-        upper - halfTrimmedSamples,
-        upper + halfTrimmedSamples
-      );
+      return upper;
     }
     lower--;
     upper++;
   }
+  // No match found, return midpoint
+  return midIndex;
+};
 
-  // No match found, a chunk of samples around the midpoint
-  return samples.slice(
-    halfTrimmedSamples / 2,
-    halfTotalSamples + halfTrimmedSamples / 2
-  );
+export const trimSamples = (samples, crossover, trimLength) => {
+  const result = [];
+  const trimMidPoint = trimLength >> 1;
+
+  for (let i = 0; i < trimLength; i++) {
+    // Map trim index to smaple index
+    let sampleI = crossover + (i - trimMidPoint);
+    if (sampleI < 0 || sampleI > samples.length - 1) {
+      result.push(0);
+    } else {
+      result.push(samples[sampleI]);
+    }
+  }
+
+  return result;
 };
