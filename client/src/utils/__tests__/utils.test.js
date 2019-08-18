@@ -6,8 +6,8 @@ test('findCrossover identifies crossover', () => {
   expect(findCrossover(samplesA, triggerLevelA)).toBe(2);
 
   const samplesB = [-2, -1, 0, 1, 2];
-  const triggerLevelB = 2;
-  expect(findCrossover(samplesB, triggerLevelB)).toBe(4);
+  const triggerLevelB = 1;
+  expect(findCrossover(samplesB, triggerLevelB)).toBe(3);
 });
 
 test('findCrossover returns midpoint when triggerLevel is not in array', () => {
@@ -20,4 +20,10 @@ test('findCrossover returns midpoint when array has no rising edge', () => {
   const samples = [5, 4, 3, 2, 1];
   const triggerLevel = 3;
   expect(findCrossover(samples, triggerLevel)).toBe(2);
+});
+
+test('findCrossover returns midpoint when triggerLevel is at end of array', () => {
+  const samplesA = [-2, -1, 0, 1, 2];
+  const triggerLevelA = 2;
+  expect(findCrossover(samplesA, triggerLevelA)).toBe(2);
 });
