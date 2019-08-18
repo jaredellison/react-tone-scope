@@ -1,16 +1,14 @@
 export const findCrossover = (samples, triggerLevel) => {
-  if (samples.length === 0) throw new Error('Empty sample array');
-
   let midIndex = samples.length >> 1;
   // Start upper and lower around midpoint of totalSamples
   let lower = midIndex;
   let upper = 1 + midIndex;
 
-  while (lower >= 0 && upper <= samples.length) {
-    if (samples[lower] <= triggerLevel && samples[lower + 1] >= triggerLevel) {
+  while (lower >= 0 && upper <= samples.length - 2) {
+    if (samples[lower] <= triggerLevel && samples[lower + 1] > triggerLevel) {
       return lower;
     }
-    if (samples[upper] <= triggerLevel && samples[upper + 1] >= triggerLevel) {
+    if (samples[upper] <= triggerLevel && samples[upper + 1] > triggerLevel) {
       return upper;
     }
     lower--;
