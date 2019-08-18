@@ -34,3 +34,10 @@ export const trimSamples = (samples, crossover, trimLength) => {
 
   return result;
 };
+
+export const scaleCoordinate = (n, inMin, inMax, outMin, outMax, factor = 1) => {
+  const inRange = inMax - inMin;
+  const outRange = outMax - outMin;
+  const ratio = (n * factor - inMin) / inRange;
+  return ratio * outRange + outMin;
+}

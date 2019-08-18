@@ -1,6 +1,7 @@
 import React from 'react';
 
 import Divisions from './Divisions.jsx';
+import { scaleCoordinate } from '../utils/utils.js';
 
 class Screen extends React.Component {
   constructor(props) {
@@ -9,13 +10,6 @@ class Screen extends React.Component {
       height: 280,
       width: 350
     };
-  }
-
-  scale(n, inMin, inMax, outMin, outMax, factor = 1) {
-    const inRange = inMax - inMin;
-    const outRange = outMax - outMin;
-    const ratio = (n * factor - inMin) / inRange;
-    return ratio * outRange + outMin;
   }
 
   render() {
@@ -31,8 +25,8 @@ class Screen extends React.Component {
     } = this.props;
 
     const traceString = samples.reduce((a, v, i) => {
-      const x = this.scale(i, 0, samples.length, 0, width);
-      const y = this.scale(-1 * v, -1, 1, 0, height, verticalScale / 4);
+      const x = scaleCoordinate(i, 0, samples.length, 0, width);
+      const y = scaleCoordinate(-1 * v, -1, 1, 0, height, verticalScale / 4);
 
       // Set starting position
       if (i === 0) {
