@@ -9,3 +9,6 @@ client/dist/bundle.js
 
 # Etc
 notes.md
+
+# Testing
+coverage/
