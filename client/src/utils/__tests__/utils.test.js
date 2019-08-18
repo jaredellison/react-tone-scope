@@ -1,4 +1,4 @@
-import { findCrossover, trimSamples } from '../utils.js';
+import { findCrossover, trimSamples, scaleCoordinate } from '../utils.js';
 
 describe('findCrossover', () => {
   test('identifies crossover', () => {
@@ -73,5 +73,30 @@ describe('trimSamples', () => {
     samples = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9];
     trimmed = trimSamples(samples, 8, 10);
     expect(trimmed).toEqual([3, 4, 5, 6, 7, 8, 9, 0, 0, 0]);
+  });
+});
+
+describe('scaleCoordinate', () => {
+  test('scales integers correctly', () => {
+    expect(scaleCoordinate(5, 0, 10, 0, 100)).toBeCloseTo(50, 5);
+    expect(scaleCoordinate(5, 0, 10, 100, 200)).toBeCloseTo(150, 5);
+    expect(scaleCoordinate(5, 0, 10, 0, 1)).toEqual(0.5, 5);
+    expect(scaleCoordinate(0.5, 0, 1, 0, 5)).toEqual(2.5, 5);
+    expect(scaleCoordinate(0.5, 0, 1, 0, 1)).toEqual(0.5, 5);
+  });
+
+  test('scales floats correctly', () => {
+    expect(scaleCoordinate(0.5, 0, 1, 0, 5)).toEqual(2.5, 5);
+    expect(scaleCoordinate(0.5, 0, 1, 0, 1)).toEqual(0.5, 5);
+  });
+
+  test('scales negative ranges', () => {
+    expect(scaleCoordinate(1.5, 1, 2, 0, -10)).toEqual(-5, 5);
+    expect(scaleCoordinate(5, 0, 10, -100, -200)).toEqual(-150, 5);
+  });
+
+  test('optional factor parameter multiplys result', () => {
+    expect(scaleCoordinate(.1, 0, 1, 0, 10, 2)).toEqual(2, 5);
+    expect(scaleCoordinate(1, 0, 10, 0, 100, 2)).toEqual(20, 5);
   });
 });
