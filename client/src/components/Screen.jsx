@@ -19,7 +19,6 @@ class Screen extends React.Component {
       divsH,
       samples,
       verticalScale,
-      horizontalScale,
       renderTiggerLine,
       triggerValue
     } = this.props;
