@@ -54,9 +54,9 @@ class Oscilloscope extends React.Component {
 
   animate() {
     const totalSamples = this.waveform.getValue();
-    const { triggerLevel } = this.state;
+    const { triggerLevel, horizontalScale } = this.state;
     const trimLength =
-      (SAMPLE_RATE * VERTICAL_DIVISIONS * this.state.horizontalScale) / 1000;
+      (SAMPLE_RATE * VERTICAL_DIVISIONS * horizontalScale) / 1000;
 
     if (totalSamples.length > 0) {
       const crossover = findCrossover(totalSamples, triggerLevel);
