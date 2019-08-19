@@ -37,7 +37,7 @@ class Screen extends React.Component {
 
     let triggerLine = null;
     if (renderTiggerLine) {
-      const triggerY = this.scale(-1 * triggerValue, -1, 1, 0, height, verticalScale / 4);
+      const triggerY = scaleCoordinate(-1 * triggerValue, -1, 1, 0, height, verticalScale / 4);
       triggerLine = (
         <line
           x1="0"
