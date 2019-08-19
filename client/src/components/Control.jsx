@@ -6,7 +6,9 @@ const Control = ({
   label,
   unit,
   value,
-  step
+  step,
+  handleStepUp,
+  handleStepDown
 }) => {
   const [editing, setEditing] = useState(false);
   const [tempValue, setTempValue] = useState('');
@@ -28,10 +30,14 @@ const Control = ({
         {label} <span className="control-label-unit">{unit}</span>
       </label>
       <div className="control-input-container">
-
         <button
           onClick={() => {
-            const newValue = value - step;
+            let newValue;
+            if (handleStepDown) {
+              newValue = handleStepDown(value);
+            } else {
+              newValue = value - step;
+            }
             setterFunction(newValue);
           }}
         >
@@ -47,18 +53,15 @@ const Control = ({
           maxLength="8"
           size="10"
           value={editing ? tempValue : value.toFixed(2)}
-
           onFocus={() => {
             if (!editing) setEditing(true);
             setTempValue('');
             inputEl.current.addEventListener('keyup', enterEventHandler);
           }}
-
           onBlur={() => {
             if (editing) setEditing(false);
             inputEl.current.removeEventListener('keyup', enterEventHandler);
           }}
-
           onChange={e => {
             const value = e.target.value.split('').filter(e => {
               if (!isNaN(Number(e))) return true;
@@ -71,13 +74,17 @@ const Control = ({
 
         <button
           onClick={() => {
-            const newValue = value + step;
+            let newValue;
+            if (handleStepDown) {
+              newValue = handleStepUp(value);
+            } else {
+              newValue = value + step;
+            }
             setterFunction(newValue);
           }}
         >
           ⇨
         </button>
-
       </div>
     </div>
   );
