@@ -1,6 +1,6 @@
 # react-tone-scope
 
-> Visualizing Web Audio Signals in Realtime
+> Real-time Visualization and Measurement of Web Audio Signals
 
 ![graphic](./documentation/screenshot.png)
 
