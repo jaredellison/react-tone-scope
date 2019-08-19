@@ -25,7 +25,7 @@ class Screen extends React.Component {
 
     const traceString = samples.reduce((a, v, i) => {
       const x = scaleCoordinate(i, 0, samples.length, 0, width);
-      const y = scaleCoordinate(-1 * v, -1, 1, 0, height, verticalScale / 4);
+      const y = scaleCoordinate(-1 * v, -1, 1, 0, height, 0.25 / verticalScale);
 
       // Set starting position
       if (i === 0) {
@@ -37,7 +37,7 @@ class Screen extends React.Component {
 
     let triggerLine = null;
     if (renderTiggerLine) {
-      const triggerY = scaleCoordinate(-1 * triggerValue, -1, 1, 0, height, verticalScale / 4);
+      const triggerY = scaleCoordinate(-1 * triggerValue, -1, 1, 0, height, 0.25 / verticalScale);
       triggerLine = (
         <line
           x1="0"

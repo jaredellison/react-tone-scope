@@ -25,7 +25,7 @@ class Oscilloscope extends React.Component {
     this.state = {
       input: null,
       samples: [],
-      verticalScale: 4,
+      verticalScale: 0.25,
       horizontalScale: 1, // milliseconds per division
       triggerLevel: 0,
       divsH: HORIZONTAL_DIVISIONS,
@@ -119,7 +119,6 @@ class Oscilloscope extends React.Component {
         <Screen
           samples={samples}
           verticalScale={verticalScale}
-          horizontalScale={horizontalScale}
           divsV={divsV}
           divsH={divsH}
           renderTiggerLine={showTriggerLine}
@@ -144,9 +143,10 @@ class Oscilloscope extends React.Component {
             }}
             id="vertical-scale-control"
             label="Vertical Scale"
-            unit="Divs / Unit"
-            step={0.1}
+            unit="Units / Div"
             value={verticalScale}
+            handleStepUp={(value) => value * 2}
+            handleStepDown={(value) => value / 2}
           />
 
           <Control
