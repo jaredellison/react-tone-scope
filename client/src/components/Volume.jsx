@@ -26,7 +26,8 @@ const Volume = props => {
         max={1}
         step={0.01}
         onChange={e => {
-          setValue(e.target.value);
+          const value = Number(e.target.value);
+          setValue(value);
         }}
         defaultValue={value}
       />
