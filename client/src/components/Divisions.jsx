@@ -17,7 +17,9 @@ const Divisions = ({ orientation, total, width, height }) => {
         />
       );
     });
-  } else if (orientation === 'horizontal') {
+  }
+
+  if (orientation === 'horizontal') {
     divs = divs.fill(null).map((v, i) => {
       const position = (i / total) * height;
       return (
