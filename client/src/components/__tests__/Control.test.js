@@ -1,48 +1,32 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { act } from 'react-dom/test-utils';
+import { shallow, mount } from 'enzyme';
 
 import Control from '../Control.jsx';
-
-let container;
-
-beforeEach(() => {
-  container = document.createElement('div');
-  document.body.appendChild(container);
-});
-
-afterEach(() => {
-  document.body.removeChild(container);
-  container = null;
-});
 
 describe('Control Component', () => {
   test('Should increment and decrement using arrow buttons', () => {
     const setterFunction = jest.fn(() => {});
     let controlValue = 0;
 
-    act(() => {
-      ReactDOM.render(
-        <Control
-          setterFunction={setterFunction}
-          id="control-component"
-          label="Label String"
-          unit="ms / Div"
-          step={0.1}
-          value={controlValue}
-        />,
-        container
-      );
-    });
+    const wrapper = shallow(
+      <Control
+        setterFunction={setterFunction}
+        id="control-component"
+        label="Label String"
+        unit="ms / Div"
+        step={0.1}
+        value={controlValue}
+      />
+    );
 
-    const buttons = container.getElementsByTagName('button');
-    const decrementButton = buttons[0];
-    const incrementButton = buttons[1];
+    const buttons = wrapper.find('button');
+    const decrementButton = buttons.at(0);
+    const incrementButton = buttons.at(1);
 
-    act(() => {
-      decrementButton.dispatchEvent(new MouseEvent('click', { bubbles: true }));
-      incrementButton.dispatchEvent(new MouseEvent('click', { bubbles: true }));
-    });
+    decrementButton.simulate('click');
+    incrementButton.simulate('click');
 
     expect(setterFunction.mock.calls[0][0]).toBe(-0.1);
     expect(setterFunction.mock.calls[1][0]).toBe(0.1);
@@ -54,34 +38,196 @@ describe('Control Component', () => {
     const handleStepUp = jest.fn(x => x * 2);
     let controlValue = 1;
 
-    act(() => {
-      ReactDOM.render(
-        <Control
-          setterFunction={setterFunction}
-          id="control-component"
-          label="Label String"
-          unit="ms / Div"
-          step={0.1}
-          value={controlValue}
-          handleStepUp={handleStepUp}
-          handleStepDown={handleStepDown}
-        />,
-        container
-      );
-    });
+    const wrapper = shallow(
+      <Control
+        setterFunction={setterFunction}
+        id="control-component"
+        label="Label String"
+        unit="ms / Div"
+        step={0.1}
+        value={controlValue}
+        handleStepUp={handleStepUp}
+        handleStepDown={handleStepDown}
+      />
+    );
 
-    const buttons = container.getElementsByTagName('button');
-    const decrementButton = buttons[0];
-    const incrementButton = buttons[1];
+    const buttons = wrapper.find('button');
+    const decrementButton = buttons.at(0);
+    const incrementButton = buttons.at(1);
 
-    act(() => {
-      decrementButton.dispatchEvent(new MouseEvent('click', { bubbles: true }));
-      incrementButton.dispatchEvent(new MouseEvent('click', { bubbles: true }));
-    });
+    decrementButton.simulate('click');
+    incrementButton.simulate('click');
 
     expect(setterFunction.mock.calls[0][0]).toBe(0.5);
     expect(setterFunction.mock.calls[1][0]).toBe(2);
     expect(handleStepUp.mock.calls.length).toBe(1);
     expect(handleStepDown.mock.calls.length).toBe(1);
+  });
+
+  test('handleChange method should accept integer input', () => {
+    const setterFunction = jest.fn(() => {});
+    let controlValue = 1;
+
+    const wrapper = shallow(
+      <Control
+        setterFunction={setterFunction}
+        id="control-component"
+        label="Label String"
+        unit="ms / Div"
+        step={0.1}
+        value={controlValue}
+      />
+    );
+    const instance = wrapper.instance();
+
+    expect(wrapper.state('tempValue')).toBe('');
+    instance.handleChange({ target: { value: '5' } });
+    expect(wrapper.state('tempValue')).toBe('5');
+  });
+
+  test('handleChange method should filter non-integer input', () => {
+    const setterFunction = jest.fn(() => {});
+    let controlValue = 1;
+
+    const wrapper = shallow(
+      <Control
+        setterFunction={setterFunction}
+        id="control-component"
+        label="Label String"
+        unit="ms / Div"
+        step={0.1}
+        value={controlValue}
+      />
+    );
+    const instance = wrapper.instance();
+
+    expect(wrapper.state('tempValue')).toBe('');
+    instance.handleChange({ target: { value: '5abcd' } });
+    expect(wrapper.state('tempValue')).toBe('5');
+  });
+
+  test('handleChange method should accept negative and float input', () => {
+    const setterFunction = jest.fn(() => {});
+    let controlValue = 1;
+
+    const wrapper = shallow(
+      <Control
+        setterFunction={setterFunction}
+        id="control-component"
+        label="Label String"
+        unit="ms / Div"
+        step={0.1}
+        value={controlValue}
+      />
+    );
+    const instance = wrapper.instance();
+
+    expect(wrapper.state('tempValue')).toBe('');
+    instance.handleChange({ target: { value: '-0.1' } });
+    expect(wrapper.state('tempValue')).toBe('-0.1');
+  });
+
+  test('handleEnterEvent method should call setter function when value is a number', () => {
+    const setterFunction = jest.fn(() => {});
+    const mockBlur = jest.fn(() => {});
+    let controlValue = 1;
+
+    const wrapper = shallow(
+      <Control
+        setterFunction={setterFunction}
+        id="control-component"
+        label="Label String"
+        unit="ms / Div"
+        step={0.1}
+        value={controlValue}
+      />
+    );
+    const instance = wrapper.instance();
+
+    const enterEvent = {
+      code: 'Enter',
+      target: {
+        value: '999',
+        blur: mockBlur,
+      }
+    };
+
+    instance.handleEnterEvent(enterEvent);
+    expect(setterFunction.mock.calls[0][0]).toBe(999);
+  });
+
+  test('handleEnterEvent method should not call setter function if value is not a number', () => {
+    const setterFunction = jest.fn(() => {});
+    const mockBlur = jest.fn(() => {});
+    let controlValue = 1;
+
+    const wrapper = shallow(
+      <Control
+        setterFunction={setterFunction}
+        id="control-component"
+        label="Label String"
+        unit="ms / Div"
+        step={0.1}
+        value={controlValue}
+      />
+    );
+    const instance = wrapper.instance();
+
+    const enterEvent = {
+      code: 'Enter',
+      target: {
+        value: 'abc',
+        blur: mockBlur,
+      }
+    };
+
+    instance.handleEnterEvent(enterEvent);
+    expect(setterFunction.mock.calls.length).toBe(0);
+  });
+
+  test('handleFocus method should trigger editing state', () => {
+    const setterFunction = jest.fn(() => {});
+    let controlValue = 1;
+
+    const wrapper = mount(
+      <Control
+        setterFunction={setterFunction}
+        id="control-component"
+        label="Label String"
+        unit="ms / Div"
+        step={0.1}
+        value={controlValue}
+      />
+    );
+    const instance = wrapper.instance();
+
+    expect(wrapper.state('editing')).toBe(false);
+    instance.handleFocus();
+    expect(wrapper.state('tempValue')).toBe('');
+    expect(wrapper.state('editing')).toBe(true);
+  });
+
+  test('handleBlur method should remove editing state', () => {
+    const setterFunction = jest.fn(() => {});
+    let controlValue = 1;
+
+    const wrapper = mount(
+      <Control
+        setterFunction={setterFunction}
+        id="control-component"
+        label="Label String"
+        unit="ms / Div"
+        step={0.1}
+        value={controlValue}
+      />
+    );
+    const instance = wrapper.instance();
+
+    expect(wrapper.state('editing')).toBe(false);
+    instance.handleFocus();
+    expect(wrapper.state('tempValue')).toBe('');
+    expect(wrapper.state('editing')).toBe(true);
+    instance.handleBlur();
+    expect(wrapper.state('editing')).toBe(false);
   });
 });
