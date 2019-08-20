@@ -33,7 +33,8 @@ class Oscilloscope extends React.Component {
       showTriggerLine: false,
       triggerClearTimeout: null,
       volumeMute: true,
-      volumeValue: 0
+      volumeValue: 0,
+      audioStarted: false
     };
 
     this.waveform = new Tone.Waveform(MAX_SAMPLES);
