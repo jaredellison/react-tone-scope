@@ -84,8 +84,8 @@ class Control extends Component {
       if (!isNaN(Number(e))) return true;
       if (['.', '-'].includes(e)) return true;
       return false;
-    });
-    this.setState({ tempValue: value.join('') });
+    }).join('');
+    this.setState({ tempValue: value });
   }
 
   render() {
