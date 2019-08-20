@@ -10,10 +10,19 @@
     "start-dev": "nodemon server/index.js",
     "start": "node server/index.js"
   },
-  "keywords": [],
-  "author": "",
+  "keywords": [
+    "Oscilloscope",
+    "Web Audio",
+    "Tone.js",
+    "Signal Processing",
+    "SVG Animation"
+  ],
+  "author": "Jared Ellison",
   "license": "GPL3",
   "jest": {
+    "setupFilesAfterEnv": [
+      "<rootDir>/enzyme.config.js"
+    ],
     "collectCoverage": false,
     "collectCoverageFrom": [
       "client/src/**/*.{js,jsx}"
@@ -26,6 +35,8 @@
     "babel-loader": "^8.0.6",
     "babel-plugin-dynamic-import-node": "^2.3.0",
     "babel-plugin-syntax-dynamic-import": "^6.18.0",
+    "enzyme": "^3.10.0",
+    "enzyme-adapter-react-16": "^1.14.0",
     "eslint-plugin-react-hooks": "^1.6.1",
     "jest": "^24.8.0",
     "nodemon": "^1.19.1",
