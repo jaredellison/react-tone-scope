@@ -32,8 +32,8 @@ describe('Control Component', () => {
 
   test('Should increment and decrement using stepUp and stepDown functions', () => {
     const setterFunction = jest.fn(() => {});
-    const handleStepDown = jest.fn(x => x / 2);
-    const handleStepUp = jest.fn(x => x * 2);
+    const handleStepDown = jest.fn((x) => x / 2);
+    const handleStepUp = jest.fn((x) => x * 2);
     let controlValue = 1;
 
     const wrapper = shallow(
@@ -147,7 +147,7 @@ describe('Control Component', () => {
       target: {
         value: '999',
         blur: mockBlur,
-      }
+      },
     };
 
     instance.handleEnterEvent(enterEvent);
@@ -176,7 +176,7 @@ describe('Control Component', () => {
       target: {
         value: 'abc',
         blur: mockBlur,
-      }
+      },
     };
 
     instance.handleEnterEvent(enterEvent);
@@ -205,7 +205,7 @@ describe('Control Component', () => {
       target: {
         value: '1',
         blur: mockBlur,
-      }
+      },
     };
 
     instance.handleEnterEvent(enterEvent);
@@ -234,7 +234,7 @@ describe('Control Component', () => {
       target: {
         value: 'abc',
         blur: mockBlur,
-      }
+      },
     };
 
     instance.handleEnterEvent(enterEvent);

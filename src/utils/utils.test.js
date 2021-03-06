@@ -96,7 +96,7 @@ describe('scaleCoordinate', () => {
   });
 
   it('should multiply result by optional factor parameter', () => {
-    expect(scaleCoordinate(.1, 0, 1, 0, 10, 2)).toEqual(2, 5);
+    expect(scaleCoordinate(0.1, 0, 1, 0, 10, 2)).toEqual(2, 5);
     expect(scaleCoordinate(1, 0, 10, 0, 100, 2)).toEqual(20, 5);
   });
 });

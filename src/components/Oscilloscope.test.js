@@ -10,8 +10,8 @@ describe('Oscilloscope Component', () => {
     const sources = [
       {
         signal: new Tone.Oscillator(440, 'sine').start(),
-        name: 'Sine Generator'
-      }
+        name: 'Sine Generator',
+      },
     ];
 
     const wrapper = mount(<Oscilloscope sources={sources} />);
@@ -25,18 +25,13 @@ describe('Oscilloscope Component', () => {
     const sources = [
       {
         signal: new Tone.Oscillator(440, 'sine').start(),
-        name: 'Sine Generator'
-      }
+        name: 'Sine Generator',
+      },
     ];
 
     const wrapper = mount(<Oscilloscope sources={sources} />);
 
-    expect(
-      wrapper
-        .find('option')
-        .at(1)
-        .text()
-    ).toBe('Sine Generator');
+    expect(wrapper.find('option').at(1).text()).toBe('Sine Generator');
   });
 
   test('animate method acquires samples and schedules a future invocation with requestAnimation frame', () => {
@@ -45,8 +40,8 @@ describe('Oscilloscope Component', () => {
     const sources = [
       {
         signal: new Tone.Oscillator(440, 'sine').start(),
-        name: 'Sine Generator'
-      }
+        name: 'Sine Generator',
+      },
     ];
 
     const wrapper = shallow(<Oscilloscope sources={sources} />);
@@ -57,32 +52,30 @@ describe('Oscilloscope Component', () => {
     instance.animate();
 
     expect(getValueMock.mock.calls.length).toBe(1);
-    expect(window.requestAnimationFrame.mock.calls[0][0]).toBe(
-      instance.animate
-    );
+    expect(window.requestAnimationFrame.mock.calls[0][0]).toBe(instance.animate);
     window.requestAnimationFrame.mockRestore();
   });
 
   test('bindInput method sets state with new input', () => {
     const mockSignalA = {
       connect: jest.fn(() => {}),
-      disconnect: jest.fn(() => {})
+      disconnect: jest.fn(() => {}),
     };
 
     const mockSignalB = {
       connect: jest.fn(() => {}),
-      disconnect: jest.fn(() => {})
+      disconnect: jest.fn(() => {}),
     };
 
     const sources = [
       {
         signal: mockSignalA,
-        name: 'Mock Signal A'
+        name: 'Mock Signal A',
       },
       {
         signal: mockSignalB,
-        name: 'Mock Signal B'
-      }
+        name: 'Mock Signal B',
+      },
     ];
 
     const wrapper = shallow(<Oscilloscope sources={sources} />);
@@ -110,14 +103,14 @@ describe('Oscilloscope Component', () => {
 
   test('handleSelect method causes audio context to resume', () => {
     const mockResume = jest.fn(() => {});
-    const mockContext =  { state: 'not-running', resume: mockResume };
+    const mockContext = { state: 'not-running', resume: mockResume };
     Tone.context = mockContext;
 
     const sources = [
       {
         signal: new Tone.Oscillator(440, 'sine').start(),
-        name: 'Sine Generator'
-      }
+        name: 'Sine Generator',
+      },
     ];
 
     const wrapper = shallow(<Oscilloscope sources={sources} />);
@@ -127,7 +120,7 @@ describe('Oscilloscope Component', () => {
 
     expect(wrapper.state('audioStarted')).toBe(false);
 
-    instance.handleSelect({target: {value: 1}});
+    instance.handleSelect({ target: { value: 1 } });
 
     expect(Tone.context.resume.mock.calls.length).toBe(1);
     expect(wrapper.state('audioStarted')).toBe(true);
