@@ -28,8 +28,6 @@ class Oscilloscope extends React.Component {
       verticalScale: 0.25,
       horizontalScale: 1, // milliseconds per division
       triggerLevel: 0,
-      showTriggerLine: false,
-      triggerClearTimeout: null,
       volumeMute: true,
       volumeValue: 0,
       audioStarted: false
@@ -104,7 +102,6 @@ class Oscilloscope extends React.Component {
       samples,
       verticalScale,
       horizontalScale,
-      showTriggerLine,
       triggerLevel,
       volumeMute,
       volumeValue
@@ -117,7 +114,6 @@ class Oscilloscope extends React.Component {
           verticalScale={verticalScale}
           divsV={VERTICAL_DIVISIONS}
           divsH={HORIZONTAL_DIVISIONS}
-          renderTiggerLine={showTriggerLine}
           triggerValue={triggerLevel}
         />
         <div id="controls">
@@ -158,19 +154,8 @@ class Oscilloscope extends React.Component {
 
           <Control
             setValue={(value) => {
-              // Reset timer if it has already been set
-              const { triggerClearTimeout } = this.state;
-              if (triggerClearTimeout !== null) clearTimeout(triggerClearTimeout);
-              const id = setTimeout(() => {
-                this.setState({
-                  showTriggerLine: false,
-                  triggerClearTimeout: null
-                });
-              }, 1000);
               this.setState({
-                triggerLevel: value,
-                showTriggerLine: true,
-                triggerClearTimeout: id
+                triggerLevel: value
               });
             }}
             id="trigger-level-control"

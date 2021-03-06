@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 
 import Divisions from './Divisions.jsx';
 import { scaleCoordinate } from '../utils/utils.js';
@@ -6,14 +6,21 @@ import { scaleCoordinate } from '../utils/utils.js';
 const SCREEN_HEIGHT = 280;
 const SCREEN_WIDTH = 350;
 
-const Screen = ({
-  divsV,
-  divsH,
-  samples,
-  verticalScale,
-  renderTiggerLine,
-  triggerValue
-}) => {
+const Screen = ({ divsV, divsH, samples, verticalScale, triggerValue }) => {
+  const [shouldRenderTriggerLine, setShouldRenderTriggerLine] = useState(false);
+
+  useEffect(() => {
+    setShouldRenderTriggerLine(true);
+
+    const id = setTimeout(() => {
+      setShouldRenderTriggerLine(false);
+    }, 1000);
+
+    return () => {
+      clearTimeout(id);
+    };
+  }, [triggerValue]);
+
   const traceString = samples.reduce((a, v, i) => {
     const x = scaleCoordinate(i, 0, samples.length, 0, SCREEN_WIDTH);
     const y = scaleCoordinate(-1 * v, -1, 1, 0, SCREEN_HEIGHT, 0.25 / verticalScale);
@@ -27,7 +34,7 @@ const Screen = ({
   }, '');
 
   let triggerLine = null;
-  if (renderTiggerLine) {
+  if (shouldRenderTriggerLine) {
     const triggerY = scaleCoordinate(
       -1 * triggerValue,
       -1,
