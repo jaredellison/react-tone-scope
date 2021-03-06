@@ -19,6 +19,9 @@
   "author": "Jared Ellison",
   "license": "GPL3",
   "jest": {
+    "setupFilesAfterEnv": [
+      "<rootDir>/enzyme.config.js"
+    ],
     "collectCoverage": false,
     "collectCoverageFrom": [
       "src/**/*.{js,jsx}"
