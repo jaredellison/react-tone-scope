@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom';
 import Tone from 'tone';
 
 import Oscilloscope from './components/Oscilloscope.jsx';
+import './style.css';
 
 class App extends React.Component {
   constructor(props) {
