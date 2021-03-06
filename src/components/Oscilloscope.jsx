@@ -28,8 +28,6 @@ class Oscilloscope extends React.Component {
       verticalScale: 0.25,
       horizontalScale: 1, // milliseconds per division
       triggerLevel: 0,
-      divsH: HORIZONTAL_DIVISIONS,
-      divsV: VERTICAL_DIVISIONS,
       showTriggerLine: false,
       triggerClearTimeout: null,
       volumeMute: true,
@@ -56,8 +54,7 @@ class Oscilloscope extends React.Component {
   animate() {
     const totalSamples = this.waveform.getValue();
     const { triggerLevel, horizontalScale } = this.state;
-    const trimLength =
-      (SAMPLE_RATE * VERTICAL_DIVISIONS * horizontalScale) / 1000;
+    const trimLength = (SAMPLE_RATE * VERTICAL_DIVISIONS * horizontalScale) / 1000;
 
     if (totalSamples.length > 0) {
       const crossover = findCrossover(totalSamples, triggerLevel);
@@ -107,8 +104,6 @@ class Oscilloscope extends React.Component {
       samples,
       verticalScale,
       horizontalScale,
-      divsV,
-      divsH,
       showTriggerLine,
       triggerLevel,
       volumeMute,
@@ -120,8 +115,8 @@ class Oscilloscope extends React.Component {
         <Screen
           samples={samples}
           verticalScale={verticalScale}
-          divsV={divsV}
-          divsH={divsH}
+          divsV={VERTICAL_DIVISIONS}
+          divsH={HORIZONTAL_DIVISIONS}
           renderTiggerLine={showTriggerLine}
           triggerValue={triggerLevel}
         />
@@ -139,7 +134,7 @@ class Oscilloscope extends React.Component {
           </select>
 
           <Control
-            setterFunction={value => {
+            setterFunction={(value) => {
               this.setState({ verticalScale: value });
             }}
             id="vertical-scale-control"
@@ -151,7 +146,7 @@ class Oscilloscope extends React.Component {
           />
 
           <Control
-            setterFunction={value => {
+            setterFunction={(value) => {
               this.setState({ horizontalScale: value });
             }}
             id="horizontal-scale-control"
@@ -162,11 +157,10 @@ class Oscilloscope extends React.Component {
           />
 
           <Control
-            setterFunction={value => {
+            setterFunction={(value) => {
               // Reset timer if it has already been set
               const { triggerClearTimeout } = this.state;
-              if (triggerClearTimeout !== null)
-                clearTimeout(triggerClearTimeout);
+              if (triggerClearTimeout !== null) clearTimeout(triggerClearTimeout);
               const id = setTimeout(() => {
                 this.setState({
                   showTriggerLine: false,
@@ -189,11 +183,11 @@ class Oscilloscope extends React.Component {
           <Volume
             mute={volumeMute}
             value={volumeValue}
-            setMute={value => {
+            setMute={(value) => {
               this.setState({ volumeMute: value });
               this.volume.mute = value;
             }}
-            setValue={value => {
+            setValue={(value) => {
               const scaled = Math.log(value) * 24;
               this.setState({ volumeValue: value, volumeMute: false });
               this.volume.mute = false;
