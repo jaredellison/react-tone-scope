@@ -5,7 +5,7 @@
 node_modules
 
 # React
-client/dist/bundle.js
+dist/bundle.js
 
 # Etc
 notes.md
