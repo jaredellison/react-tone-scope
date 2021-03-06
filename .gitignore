@@ -4,8 +4,8 @@
 # Node
 node_modules
 
-# React
-client/dist/bundle.js
+# Build Artifacts
+dist
 
 # Etc
 notes.md
