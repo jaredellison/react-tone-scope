@@ -1,10 +1,11 @@
 const path = require('path');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
 
 module.exports = {
   entry: path.join(__dirname, './src/app.jsx'),
   output: {
     path: path.join(__dirname, './dist'),
-    filename: 'bundle.js'
+    filename: 'bundle.js',
   },
   devServer: {
     contentBase: path.join(__dirname, './dist'),
@@ -17,12 +18,17 @@ module.exports = {
         test: /\.(js|jsx)$/,
         exclude: /node_modules/,
         use: {
-          loader: "babel-loader",
+          loader: 'babel-loader',
           options: {
-            presets: ['@babel/preset-react', '@babel/preset-env']
-          }
-        }
-      }
-    ]
-  }
-}
+            presets: ['@babel/preset-react', '@babel/preset-env'],
+          },
+        },
+      },
+    ],
+  },
+  plugins: [
+    new HtmlWebpackPlugin({
+      template: path.join(__dirname, './src/index.html'),
+    }),
+  ],
+};
