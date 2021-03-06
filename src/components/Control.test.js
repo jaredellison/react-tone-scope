@@ -99,7 +99,7 @@ describe('Control Component', () => {
     expect(wrapper.find('input').props().value).toBe('6');
   });
 
-  xtest('handleChange method should filter non-integer input', () => {
+  test('handleChange method should filter non-integer input', () => {
     const setterFunction = jest.fn(() => {});
     let controlValue = 1;
 
@@ -113,11 +113,17 @@ describe('Control Component', () => {
         value={controlValue}
       />
     );
-    const instance = wrapper.instance();
 
-    expect(wrapper.state('tempValue')).toBe('');
-    instance.handleChange({ target: { value: '5abcd' } });
-    expect(wrapper.state('tempValue')).toBe('5');
+    const input = wrapper.find('input');
+
+    act(() => {
+      input.simulate('focus');
+      input.simulate('change', { target: { value: '5abcd' } });
+    });
+
+    wrapper.update();
+
+    expect(wrapper.find('input').props().value).toBe('5');
   });
 
   xtest('handleChange method should accept negative and float input', () => {
