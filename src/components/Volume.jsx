@@ -5,7 +5,13 @@ const Volume = ({ mute, value, setMute, setValue }) => (
     <label htmlFor="mute" className="control-label">
       Mute
     </label>
-    <input type="checkbox" id="mute" name="mute" onChange={() => setMute(!mute)} checked={mute} />
+    <input
+      type="checkbox"
+      id="mute"
+      name="mute"
+      onChange={() => setMute(!mute)}
+      checked={mute}
+    />
     <label htmlFor="volume-control" className="control-label">
       Volume Control
     </label>
