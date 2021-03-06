@@ -134,7 +134,7 @@ class Oscilloscope extends React.Component {
           </select>
 
           <Control
-            setterFunction={(value) => {
+            setValue={(value) => {
               this.setState({ verticalScale: value });
             }}
             id="vertical-scale-control"
@@ -146,7 +146,7 @@ class Oscilloscope extends React.Component {
           />
 
           <Control
-            setterFunction={(value) => {
+            setValue={(value) => {
               this.setState({ horizontalScale: value });
             }}
             id="horizontal-scale-control"
@@ -157,7 +157,7 @@ class Oscilloscope extends React.Component {
           />
 
           <Control
-            setterFunction={(value) => {
+            setValue={(value) => {
               // Reset timer if it has already been set
               const { triggerClearTimeout } = this.state;
               if (triggerClearTimeout !== null) clearTimeout(triggerClearTimeout);

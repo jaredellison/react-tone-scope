@@ -6,12 +6,12 @@ import Control from './Control.jsx';
 
 describe('Control Component', () => {
   test('Should increment and decrement using arrow buttons', () => {
-    const setterFunction = jest.fn(() => {});
+    const setValue = jest.fn(() => {});
     let controlValue = 0;
 
     const wrapper = mount(
       <Control
-        setterFunction={setterFunction}
+        setValue={setValue}
         id="control-component"
         label="Label String"
         unit="ms / Div"
@@ -27,19 +27,19 @@ describe('Control Component', () => {
     decrementButton.simulate('click');
     incrementButton.simulate('click');
 
-    expect(setterFunction.mock.calls[0][0]).toBe(-0.1);
-    expect(setterFunction.mock.calls[1][0]).toBe(0.1);
+    expect(setValue.mock.calls[0][0]).toBe(-0.1);
+    expect(setValue.mock.calls[1][0]).toBe(0.1);
   });
 
   test('Should increment and decrement using stepUp and stepDown functions', () => {
-    const setterFunction = jest.fn(() => {});
+    const setValue = jest.fn(() => {});
     const handleStepDown = jest.fn((x) => x / 2);
     const handleStepUp = jest.fn((x) => x * 2);
     let controlValue = 1;
 
     const wrapper = mount(
       <Control
-        setterFunction={setterFunction}
+        setValue={setValue}
         id="control-component"
         label="Label String"
         unit="ms / Div"
@@ -57,19 +57,19 @@ describe('Control Component', () => {
     decrementButton.simulate('click');
     incrementButton.simulate('click');
 
-    expect(setterFunction.mock.calls[0][0]).toBe(0.5);
-    expect(setterFunction.mock.calls[1][0]).toBe(2);
+    expect(setValue.mock.calls[0][0]).toBe(0.5);
+    expect(setValue.mock.calls[1][0]).toBe(2);
     expect(handleStepUp.mock.calls.length).toBe(1);
     expect(handleStepDown.mock.calls.length).toBe(1);
   });
 
   test('handleChange method should accept integer input', () => {
-    const setterFunction = jest.fn(() => {});
+    const setValue = jest.fn(() => {});
     let controlValue = 1;
 
     const wrapper = mount(
       <Control
-        setterFunction={setterFunction}
+        setValue={setValue}
         id="control-component"
         label="Label String"
         unit="ms / Div"
@@ -100,12 +100,12 @@ describe('Control Component', () => {
   });
 
   test('handleChange method should filter non-integer input', () => {
-    const setterFunction = jest.fn(() => {});
+    const setValue = jest.fn(() => {});
     let controlValue = 1;
 
     const wrapper = mount(
       <Control
-        setterFunction={setterFunction}
+        setValue={setValue}
         id="control-component"
         label="Label String"
         unit="ms / Div"
@@ -127,12 +127,12 @@ describe('Control Component', () => {
   });
 
   test('handleChange method should accept negative and float input', () => {
-    const setterFunction = jest.fn(() => {});
+    const setValue = jest.fn(() => {});
     let controlValue = 1;
 
     const wrapper = mount(
       <Control
-        setterFunction={setterFunction}
+        setValue={setValue}
         id="control-component"
         label="Label String"
         unit="ms / Div"
@@ -154,13 +154,13 @@ describe('Control Component', () => {
   });
 
   xtest('handleEnterEvent method should call setter function when value is a number', () => {
-    const setterFunction = jest.fn(() => {});
+    const setValue = jest.fn(() => {});
     const mockBlur = jest.fn(() => {});
     let controlValue = 1;
 
     const wrapper = mount(
       <Control
-        setterFunction={setterFunction}
+        setValue={setValue}
         id="control-component"
         label="Label String"
         unit="ms / Div"
@@ -179,17 +179,17 @@ describe('Control Component', () => {
     };
 
     instance.handleEnterEvent(enterEvent);
-    expect(setterFunction.mock.calls[0][0]).toBe(999);
+    expect(setValue.mock.calls[0][0]).toBe(999);
   });
 
   xtest('handleEnterEvent method should not call setter function if value is not a number', () => {
-    const setterFunction = jest.fn(() => {});
+    const setValue = jest.fn(() => {});
     const mockBlur = jest.fn(() => {});
     let controlValue = 1;
 
     const wrapper = mount(
       <Control
-        setterFunction={setterFunction}
+        setValue={setValue}
         id="control-component"
         label="Label String"
         unit="ms / Div"
@@ -208,17 +208,17 @@ describe('Control Component', () => {
     };
 
     instance.handleEnterEvent(enterEvent);
-    expect(setterFunction.mock.calls.length).toBe(0);
+    expect(setValue.mock.calls.length).toBe(0);
   });
 
   xtest('handleEnterEvent should blur the target element', () => {
-    const setterFunction = jest.fn(() => {});
+    const setValue = jest.fn(() => {});
     const mockBlur = jest.fn(() => {});
     let controlValue = 1;
 
     const wrapper = mount(
       <Control
-        setterFunction={setterFunction}
+        setValue={setValue}
         id="control-component"
         label="Label String"
         unit="ms / Div"
@@ -241,13 +241,13 @@ describe('Control Component', () => {
   });
 
   xtest('handleEnterEvent method should do nothing if code is not "Enter"', () => {
-    const setterFunction = jest.fn(() => {});
+    const setValue = jest.fn(() => {});
     const mockBlur = jest.fn(() => {});
     let controlValue = 1;
 
     const wrapper = mount(
       <Control
-        setterFunction={setterFunction}
+        setValue={setValue}
         id="control-component"
         label="Label String"
         unit="ms / Div"
@@ -266,17 +266,17 @@ describe('Control Component', () => {
     };
 
     instance.handleEnterEvent(enterEvent);
-    expect(setterFunction.mock.calls.length).toBe(0);
+    expect(setValue.mock.calls.length).toBe(0);
     expect(mockBlur.mock.calls.length).toBe(0);
   });
 
   xtest('handleFocus method should trigger editing state', () => {
-    const setterFunction = jest.fn(() => {});
+    const setValue = jest.fn(() => {});
     let controlValue = 1;
 
     const wrapper = mount(
       <Control
-        setterFunction={setterFunction}
+        setValue={setValue}
         id="control-component"
         label="Label String"
         unit="ms / Div"
@@ -293,12 +293,12 @@ describe('Control Component', () => {
   });
 
   xtest('handleBlur method should remove editing state', () => {
-    const setterFunction = jest.fn(() => {});
+    const setValue = jest.fn(() => {});
     let controlValue = 1;
 
     const wrapper = mount(
       <Control
-        setterFunction={setterFunction}
+        setValue={setValue}
         id="control-component"
         label="Label String"
         unit="ms / Div"

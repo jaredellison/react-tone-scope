@@ -5,7 +5,7 @@ const Control = ({
   label,
   unit,
   value,
-  setterFunction,
+  setValue,
   step,
   handleStepDown,
   handleStepUp
@@ -22,7 +22,7 @@ const Control = ({
       newValue = value - step;
     }
 
-    setterFunction(newValue);
+    setValue(newValue);
   }
 
   function handleIncrementClick() {
@@ -34,14 +34,14 @@ const Control = ({
       newValue = value + step;
     }
 
-    setterFunction(newValue);
+    setValue(newValue);
   }
 
   function handleEnterEvent(e) {
     if (e.code === 'Enter') {
       const value = Number(e.target.value);
       if (!isNaN(value) && e.target.value.length > 0) {
-        setterFunction(value);
+        setValue(value);
       }
       e.target.blur();
     }
