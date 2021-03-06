@@ -1,7 +1,7 @@
 import React from 'react';
 import { shallow, mount } from 'enzyme';
 
-import Control from '../Control.jsx';
+import Control from './Control.jsx';
 
 describe('Control Component', () => {
   test('Should increment and decrement using arrow buttons', () => {

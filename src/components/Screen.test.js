@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom';
 import { act } from 'react-dom/test-utils';
 import { create } from "react-test-renderer";
 
-import Screen from '../Screen.jsx';
+import Screen from './Screen.jsx';
 
 let container;
 
