@@ -26,12 +26,7 @@ describe('Volume Component', () => {
 
     act(() => {
       ReactDOM.render(
-        <Volume
-          mute={muteValue}
-          value={volumeValue}
-          setMute={muteSetter}
-          setValue={volumeSetter}
-        />,
+        <Volume mute={muteValue} value={volumeValue} setMute={muteSetter} setValue={volumeSetter} />,
         container
       );
     });
@@ -53,12 +48,7 @@ describe('Volume Component', () => {
 
     act(() => {
       ReactDOM.render(
-        <Volume
-          mute={muteValue}
-          value={volumeValue}
-          setMute={muteSetter}
-          setValue={volumeSetter}
-        />,
+        <Volume mute={muteValue} value={volumeValue} setMute={muteSetter} setValue={volumeSetter} />,
         container
       );
     });
