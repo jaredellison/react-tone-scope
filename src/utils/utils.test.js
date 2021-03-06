@@ -1,7 +1,7 @@
-import { findCrossover, trimSamples, scaleCoordinate } from '../utils.js';
+import { findCrossover, trimSamples, scaleCoordinate } from './utils.js';
 
 describe('findCrossover', () => {
-  test('identifies crossover', () => {
+  it('should identify the crossover index', () => {
     const samplesA = [-2, -1, 0, 1, 2];
     const triggerLevelA = 0;
     expect(findCrossover(samplesA, triggerLevelA)).toBe(2);
@@ -11,19 +11,19 @@ describe('findCrossover', () => {
     expect(findCrossover(samplesB, triggerLevelB)).toBe(3);
   });
 
-  test('returns midpoint when triggerLevel is not in array', () => {
+  it('should return the middle index when triggerLevel is not in array', () => {
     const samples = [-2, -1, 0, 1, 2];
     const triggerLevel = 5;
     expect(findCrossover(samples, triggerLevel)).toBe(2);
   });
 
-  test('returns midpoint when array has no rising edge', () => {
+  it('should return the middle index when array has no rising edge', () => {
     const samples = [5, 4, 3, 2, 1];
     const triggerLevel = 3;
     expect(findCrossover(samples, triggerLevel)).toBe(2);
   });
 
-  test('returns midpoint when triggerLevel is at end of array', () => {
+  it('should return the middle index when triggerLevel is at end of array', () => {
     const samplesA = [-2, -1, 0, 1, 2];
     const triggerLevelA = 2;
     expect(findCrossover(samplesA, triggerLevelA)).toBe(2);
@@ -31,7 +31,7 @@ describe('findCrossover', () => {
 });
 
 describe('trimSamples', () => {
-  test('trims to correct length', () => {
+  it('should trim array to correct length', () => {
     let samples, trimmed;
 
     samples = new Array(100).fill(1);
@@ -51,7 +51,7 @@ describe('trimSamples', () => {
     expect(trimmed.length).toBe(10);
   });
 
-  test('trims around crossover', () => {
+  it('should trim around the crossover', () => {
     let samples, trimmed;
 
     samples = [0, 1, 2, 3, 4];
@@ -63,7 +63,7 @@ describe('trimSamples', () => {
     expect(trimmed).toEqual([3, 4, 5, 6, 7]);
   });
 
-  test('fills with 0 when trim is larger than available samples', () => {
+  it('should pad either side of array with 0 when trim is larger than available samples', () => {
     let samples, trimmed;
 
     samples = [0, 1, 2, 3, 4];
@@ -77,7 +77,7 @@ describe('trimSamples', () => {
 });
 
 describe('scaleCoordinate', () => {
-  test('scales integers correctly', () => {
+  it('should scale integers correctly', () => {
     expect(scaleCoordinate(5, 0, 10, 0, 100)).toBeCloseTo(50, 5);
     expect(scaleCoordinate(5, 0, 10, 100, 200)).toBeCloseTo(150, 5);
     expect(scaleCoordinate(5, 0, 10, 0, 1)).toEqual(0.5, 5);
@@ -85,17 +85,17 @@ describe('scaleCoordinate', () => {
     expect(scaleCoordinate(0.5, 0, 1, 0, 1)).toEqual(0.5, 5);
   });
 
-  test('scales floats correctly', () => {
+  it('should scale floats correctly', () => {
     expect(scaleCoordinate(0.5, 0, 1, 0, 5)).toEqual(2.5, 5);
     expect(scaleCoordinate(0.5, 0, 1, 0, 1)).toEqual(0.5, 5);
   });
 
-  test('scales negative ranges', () => {
+  it('should scale negative ranges', () => {
     expect(scaleCoordinate(1.5, 1, 2, 0, -10)).toEqual(-5, 5);
     expect(scaleCoordinate(5, 0, 10, -100, -200)).toEqual(-150, 5);
   });
 
-  test('optional factor parameter multiplys result', () => {
+  it('should multiply result by optional factor parameter', () => {
     expect(scaleCoordinate(.1, 0, 1, 0, 10, 2)).toEqual(2, 5);
     expect(scaleCoordinate(1, 0, 10, 0, 100, 2)).toEqual(20, 5);
   });

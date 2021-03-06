@@ -2,7 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import { act } from 'react-dom/test-utils';
 
-import Divisions from '../Divisions.jsx';
+import Divisions from './Divisions.jsx';
 
 let container;
 
