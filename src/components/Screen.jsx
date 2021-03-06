@@ -12,7 +12,7 @@ const Screen = ({
   samples,
   verticalScale,
   renderTiggerLine,
-  triggerValue,
+  triggerValue
 }) => {
   const traceString = samples.reduce((a, v, i) => {
     const x = scaleCoordinate(i, 0, samples.length, 0, SCREEN_WIDTH);
