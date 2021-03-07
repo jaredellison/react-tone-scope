@@ -1,7 +1,7 @@
 import React from 'react';
 import { create } from 'react-test-renderer';
 
-import Screen from './Screen.jsx';
+import Screen from './Screen.js';
 
 let container;
 
@@ -23,7 +23,7 @@ describe('Screen Component', () => {
       divsV: 10,
       divsH: 8,
       renderTiggerLine: false,
-      triggerValue: 0,
+      triggerValue: 0
     };
 
     const component = create(<Screen {...props} />);
@@ -40,7 +40,7 @@ describe('Screen Component', () => {
       divsV: 10,
       divsH: 8,
       renderTiggerLine: true,
-      triggerValue: 0,
+      triggerValue: 0
     };
 
     const component = create(<Screen {...props} />);
@@ -56,7 +56,7 @@ describe('Screen Component', () => {
       divsV: 10,
       divsH: 8,
       renderTiggerLine: false,
-      triggerValue: 0,
+      triggerValue: 0
     };
 
     const component = create(<Screen {...props} />);

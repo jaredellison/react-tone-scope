@@ -4,15 +4,15 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
 module.exports = {
-  entry: path.join(__dirname, './src/app.jsx'),
+  entry: path.join(__dirname, './src/app.js'),
   output: {
     path: path.join(__dirname, './dist'),
-    filename: 'bundle.js',
+    filename: 'bundle.js'
   },
   devServer: {
     contentBase: path.join(__dirname, './dist'),
     open: true,
-    port: 8000,
+    port: 8000
   },
   module: {
     rules: [
@@ -20,29 +20,29 @@ module.exports = {
         test: /\.(js|jsx)$/,
         exclude: /node_modules/,
         use: {
-          loader: 'babel-loader',
-        },
+          loader: 'babel-loader'
+        }
       },
       {
         test: /\.css$/,
         use: [
           MiniCssExtractPlugin.loader,
           {
-            loader: 'css-loader',
+            loader: 'css-loader'
           }
         ]
       },
       {
         test: /\.(gif|png|jpe?g|svg|xml|mp3)?$/i,
-        use: "file-loader"
+        use: 'file-loader'
       }
-    ],
+    ]
   },
   plugins: [
     new CleanWebpackPlugin(),
     new HtmlWebpackPlugin({
-      template: path.join(__dirname, './src/index.html'),
+      template: path.join(__dirname, './src/index.html')
     }),
-    new MiniCssExtractPlugin(),
-  ],
+    new MiniCssExtractPlugin()
+  ]
 };

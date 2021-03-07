@@ -2,7 +2,7 @@ import React from 'react';
 import { mount } from 'enzyme';
 import { act } from 'react-dom/test-utils';
 
-import Control from './Control.jsx';
+import Control from './Control.js';
 
 describe('Control Component', () => {
   test('Should increment and decrement using arrow buttons', () => {

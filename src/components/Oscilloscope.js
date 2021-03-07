@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useRef } from 'react';
 import Tone from 'tone';
 
-import Control from './Control.jsx';
-import Screen from './Screen.jsx';
-import Volume from './Volume.jsx';
+import Control from './Control.js';
+import Screen from './Screen.js';
+import Volume from './Volume.js';
 
 import { trimSamples, findCrossover } from '../utils/utils.js';
 

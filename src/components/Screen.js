@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 
-import Divisions from './Divisions.jsx';
+import Divisions from './Divisions.js';
 import { scaleCoordinate } from '../utils/utils.js';
 
 const SCREEN_HEIGHT = 280;

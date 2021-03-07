@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom';
 import { act } from 'react-dom/test-utils';
 import TestUtils from 'react-dom/test-utils';
 
-import Volume from './Volume.jsx';
+import Volume from './Volume.js';
 
 let container;
 
@@ -26,7 +26,12 @@ describe('Volume Component', () => {
 
     act(() => {
       ReactDOM.render(
-        <Volume mute={muteValue} value={volumeValue} setMute={muteSetter} setValue={volumeSetter} />,
+        <Volume
+          mute={muteValue}
+          value={volumeValue}
+          setMute={muteSetter}
+          setValue={volumeSetter}
+        />,
         container
       );
     });
@@ -48,7 +53,12 @@ describe('Volume Component', () => {
 
     act(() => {
       ReactDOM.render(
-        <Volume mute={muteValue} value={volumeValue} setMute={muteSetter} setValue={volumeSetter} />,
+        <Volume
+          mute={muteValue}
+          value={volumeValue}
+          setMute={muteSetter}
+          setValue={volumeSetter}
+        />,
         container
       );
     });

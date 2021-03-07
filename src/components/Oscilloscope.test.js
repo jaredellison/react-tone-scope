@@ -3,7 +3,7 @@ import { shallow, mount } from 'enzyme';
 import Tone from 'tone';
 jest.mock('tone');
 
-import Oscilloscope from './Oscilloscope.jsx';
+import Oscilloscope from './Oscilloscope.js';
 
 describe('Oscilloscope Component', () => {
   test('Renders 1 select element, 3 control components and 1 volume component ', () => {
