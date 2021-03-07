@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import Tone from 'tone';
+import * as Tone from 'tone';
 
 import Control from './Control.js';
 import Screen from './Screen.js';

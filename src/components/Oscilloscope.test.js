@@ -1,6 +1,7 @@
 import React from 'react';
 import { shallow, mount } from 'enzyme';
-import Tone from 'tone';
+import * as Tone from 'tone';
+
 jest.mock('tone');
 
 import Oscilloscope from './Oscilloscope.js';
