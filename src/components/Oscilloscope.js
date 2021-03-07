@@ -33,7 +33,7 @@ const Oscilloscope = ({ sources }) => {
 
   // Tone Object Refs
   const waveformRef = useRef(new Tone.Waveform(MAX_SAMPLES));
-  const volumeRef = useRef(new Tone.Volume({ volume: 0, mute: true }).toMaster());
+  const volumeRef = useRef(new Tone.Volume({ volume: 0, mute: true }).toDestination());
 
   useEffect(() => {
     let animationId;
@@ -45,6 +45,7 @@ const Oscilloscope = ({ sources }) => {
 
       if (totalSamples.length > 0) {
         const crossover = findCrossover(totalSamples, triggerLevel);
+        console.log('crossover:', crossover);
         const newSamples = trimSamples(totalSamples, crossover, trimLength);
         setSamples(newSamples);
       }
