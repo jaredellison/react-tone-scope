@@ -2,7 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import { act } from 'react-dom/test-utils';
 
-import Divisions from './Divisions.jsx';
+import Divisions from './Divisions.js';
 
 let container;
 
@@ -56,7 +56,7 @@ describe('Divisions Component', () => {
     });
 
     const divisions = Array.from(document.getElementsByTagName('line'));
-    const divisionXCoordinates = divisions.map(e => [
+    const divisionXCoordinates = divisions.map((e) => [
       e.attributes.getNamedItem('x1').value,
       e.attributes.getNamedItem('x2').value
     ]);
@@ -92,9 +92,7 @@ describe('Divisions Component', () => {
       );
     });
     const divisions = document.getElementsByTagName('line');
-    expect(divisions[4].attributes.getNamedItem('stroke').value).toBe(
-      'lightgrey'
-    );
+    expect(divisions[4].attributes.getNamedItem('stroke').value).toBe('lightgrey');
     expect(divisions[5].attributes.getNamedItem('stroke').value).toBe('grey');
   });
 
@@ -137,7 +135,7 @@ describe('Divisions Component', () => {
     });
 
     const divisions = Array.from(document.getElementsByTagName('line'));
-    const divisionYCoordinates = divisions.map(e => [
+    const divisionYCoordinates = divisions.map((e) => [
       e.attributes.getNamedItem('y1').value,
       e.attributes.getNamedItem('y2').value
     ]);
@@ -173,9 +171,7 @@ describe('Divisions Component', () => {
       );
     });
     const divisions = document.getElementsByTagName('line');
-    expect(divisions[4].attributes.getNamedItem('stroke').value).toBe(
-      'lightgrey'
-    );
+    expect(divisions[4].attributes.getNamedItem('stroke').value).toBe('lightgrey');
     expect(divisions[5].attributes.getNamedItem('stroke').value).toBe('grey');
   });
 });

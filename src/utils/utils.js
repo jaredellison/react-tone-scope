@@ -40,4 +40,4 @@ export const scaleCoordinate = (n, inMin, inMax, outMin, outMax, factor = 1) => 
   const outRange = outMax - outMin;
   const ratio = (n * factor - inMin) / inRange;
   return ratio * outRange + outMin;
-}
+};
