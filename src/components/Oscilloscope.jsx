@@ -1,11 +1,11 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import Tone from 'tone';
 
 import Control from './Control.jsx';
 import Screen from './Screen.jsx';
 import Volume from './Volume.jsx';
 
-import { trimSamples, trimSampleArray, findCrossover } from '../utils/utils.js';
+import { trimSamples, findCrossover } from '../utils/utils.js';
 
 // MAX_SAMPLES Must be a power of 2
 // Increasing MAX_SAMPLES will increase horizontal resolution but also the
@@ -19,170 +19,140 @@ const SAMPLE_RATE = 44100;
 const VERTICAL_DIVISIONS = 10;
 const HORIZONTAL_DIVISIONS = 8;
 
-class Oscilloscope extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      input: null,
-      samples: [],
-      verticalScale: 0.25,
-      horizontalScale: 1, // milliseconds per division
-      triggerLevel: 0,
-      volumeMute: true,
-      volumeValue: 0,
-      audioStarted: false
-    };
+const waveform = new Tone.Waveform(MAX_SAMPLES);
+const volume = new Tone.Volume({ volume: 0, mute: true }).toMaster();
 
-    this.waveform = new Tone.Waveform(MAX_SAMPLES);
-    this.volume = new Tone.Volume({ volume: 0, mute: true }).toMaster();
+const Oscilloscope = ({ sources }) => {
+  // Control Values
+  const [input, setInput] = useState(null);
+  const [verticalScale, setVerticalScale] = useState(0.25);
+  const [horizontalScale, setHorizontalScale] = useState(1); // milliseconds per division
+  const [triggerLevel, setTriggerLevel] = useState(0);
+  const [volumeMute, setVolumeMute] = useState(true);
+  const [volumeValue, setVolumeValue] = useState(0);
 
-    this.animate = this.animate.bind(this);
-    this.handleSelect = this.handleSelect.bind(this);
-    this.bindInput = this.bindInput.bind(this);
-  }
+  // Audio Data
+  const [samples, setSamples] = useState([]);
 
-  componentDidMount() {
-    this.animationId = requestAnimationFrame(this.animate);
-  }
+  useEffect(() => {
+    let animationId;
 
-  componentWillUnmount() {
-    cancelAnimationFrame(this.animationId);
-  }
+    function animate() {
+      const totalSamples = waveform.getValue();
+      const trimLength = (SAMPLE_RATE * VERTICAL_DIVISIONS * horizontalScale) / 1000;
 
-  animate() {
-    const totalSamples = this.waveform.getValue();
-    const { triggerLevel, horizontalScale } = this.state;
-    const trimLength = (SAMPLE_RATE * VERTICAL_DIVISIONS * horizontalScale) / 1000;
+      if (totalSamples.length > 0) {
+        const crossover = findCrossover(totalSamples, triggerLevel);
+        const newSamples = trimSamples(totalSamples, crossover, trimLength);
+        setSamples(newSamples);
+      }
 
-    if (totalSamples.length > 0) {
-      const crossover = findCrossover(totalSamples, triggerLevel);
-      const samples = trimSamples(totalSamples, crossover, trimLength);
-      this.setState({
-        samples: samples
-      });
+      animationId = requestAnimationFrame(animate);
     }
-    requestAnimationFrame(this.animate);
-  }
 
-  bindInput(index) {
+    animationId = requestAnimationFrame(animate);
+
+    return () => {
+      cancelAnimationFrame(animationId);
+    };
+  }, [horizontalScale, triggerLevel]);
+
+  function bindInput(index) {
     // Find signal source
-    const currentInput = this.state.input;
-    const newInput = this.props.sources[index] || null;
+    const currentInput = input;
+    const newInput = sources[index] || null;
 
     // Remove previous input
     if (currentInput !== null && currentInput !== newInput) {
-      currentInput.disconnect(this.waveform);
-      currentInput.disconnect(this.volume);
+      currentInput.disconnect(waveform);
+      currentInput.disconnect(volume);
     }
 
     if (newInput !== null) {
       // Connect input
-      newInput.signal.connect(this.waveform);
-      newInput.signal.connect(this.volume);
-      this.setState({
-        input: newInput.signal
-      });
+      newInput.signal.connect(waveform);
+      newInput.signal.connect(volume);
+      setInput(newInput.signal);
     } else {
-      this.setState({
-        input: newInput
-      });
+      setInput(newInput);
     }
   }
 
-  handleSelect(e) {
+  function handleSelect(e) {
     if (Tone.context.state !== 'running') {
       Tone.context.resume();
-      this.setState({ audioStarted: true });
     }
-    this.bindInput(e.target.value);
+    bindInput(e.target.value);
   }
 
-  render() {
-    const {
-      samples,
-      verticalScale,
-      horizontalScale,
-      triggerLevel,
-      volumeMute,
-      volumeValue
-    } = this.state;
+  return (
+    <div id="oscilloscope-container">
+      <Screen
+        samples={samples}
+        verticalScale={verticalScale}
+        divsV={VERTICAL_DIVISIONS}
+        divsH={HORIZONTAL_DIVISIONS}
+        triggerValue={triggerLevel}
+      />
+      <div id="controls">
+        <p>Oscilloscope</p>
 
-    return (
-      <div id="oscilloscope-container">
-        <Screen
-          samples={samples}
-          verticalScale={verticalScale}
-          divsV={VERTICAL_DIVISIONS}
-          divsH={HORIZONTAL_DIVISIONS}
-          triggerValue={triggerLevel}
+        <label className="control-label">Input Source</label>
+        <select onChange={handleSelect}>
+          <option value={-1}> - none - </option>
+          {sources.map((source, i) => (
+            <option key={i} value={i}>
+              {source.name}
+            </option>
+          ))}
+        </select>
+
+        <Control
+          setValue={setVerticalScale}
+          id="vertical-scale-control"
+          label="Vertical Scale"
+          unit="Units / Div"
+          value={verticalScale}
+          handleStepUp={(value) => value * 2}
+          handleStepDown={(value) => value / 2}
         />
-        <div id="controls">
-          <p>Oscilloscope</p>
 
-          <label className="control-label">Input Source</label>
-          <select onChange={this.handleSelect}>
-            <option value={-1}> - none - </option>
-            {this.props.sources.map((source, i) => (
-              <option key={i} value={i}>
-                {source.name}
-              </option>
-            ))}
-          </select>
+        <Control
+          setValue={setHorizontalScale}
+          id="horizontal-scale-control"
+          label="Horizontal Scale"
+          unit="ms / Div"
+          step={0.1}
+          value={horizontalScale}
+        />
 
-          <Control
-            setValue={(value) => {
-              this.setState({ verticalScale: value });
-            }}
-            id="vertical-scale-control"
-            label="Vertical Scale"
-            unit="Units / Div"
-            value={verticalScale}
-            handleStepUp={(value) => value * 2}
-            handleStepDown={(value) => value / 2}
-          />
+        <Control
+          setValue={setTriggerLevel}
+          id="trigger-level-control"
+          label="Trigger Level"
+          unit="Units"
+          step={0.1}
+          value={triggerLevel}
+        />
 
-          <Control
-            setValue={(value) => {
-              this.setState({ horizontalScale: value });
-            }}
-            id="horizontal-scale-control"
-            label="Horizontal Scale"
-            unit="ms / Div"
-            step={0.1}
-            value={horizontalScale}
-          />
-
-          <Control
-            setValue={(value) => {
-              this.setState({
-                triggerLevel: value
-              });
-            }}
-            id="trigger-level-control"
-            label="Trigger Level"
-            unit="Units"
-            step={0.1}
-            value={triggerLevel}
-          />
-
-          <Volume
-            mute={volumeMute}
-            value={volumeValue}
-            setMute={(value) => {
-              this.setState({ volumeMute: value });
-              this.volume.mute = value;
-            }}
-            setValue={(value) => {
-              const scaled = Math.log(value) * 24;
-              this.setState({ volumeValue: value, volumeMute: false });
-              this.volume.mute = false;
-              this.volume.volume.value = scaled;
-            }}
-          />
-        </div>
+        <Volume
+          mute={volumeMute}
+          value={volumeValue}
+          setMute={(value) => {
+            setVolumeMute(value);
+            volume.mute = value;
+          }}
+          setValue={(value) => {
+            setVolumeMute(false);
+            volume.mute = false;
+            const scaled = Math.log(value) * 24;
+            setVolumeValue(value);
+            volume.volume.value = scaled;
+          }}
+        />
       </div>
-    );
-  }
-}
+    </div>
+  );
+};
 
 export default Oscilloscope;
