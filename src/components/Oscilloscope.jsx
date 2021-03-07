@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Tone from 'tone';
 
 import Control from './Control.jsx';
@@ -19,9 +19,6 @@ const SAMPLE_RATE = 44100;
 const VERTICAL_DIVISIONS = 10;
 const HORIZONTAL_DIVISIONS = 8;
 
-const waveform = new Tone.Waveform(MAX_SAMPLES);
-const volume = new Tone.Volume({ volume: 0, mute: true }).toMaster();
-
 const Oscilloscope = ({ sources }) => {
   // Control Values
   const [input, setInput] = useState(null);
@@ -34,12 +31,17 @@ const Oscilloscope = ({ sources }) => {
   // Audio Data
   const [samples, setSamples] = useState([]);
 
+  // Tone Object Refs
+  const waveformRef = useRef(new Tone.Waveform(MAX_SAMPLES));
+  const volumeRef = useRef(new Tone.Volume({ volume: 0, mute: true }).toMaster());
+
   useEffect(() => {
     let animationId;
 
+    const trimLength = (SAMPLE_RATE * VERTICAL_DIVISIONS * horizontalScale) / 1000;
+
     function animate() {
-      const totalSamples = waveform.getValue();
-      const trimLength = (SAMPLE_RATE * VERTICAL_DIVISIONS * horizontalScale) / 1000;
+      const totalSamples = waveformRef.current.getValue();
 
       if (totalSamples.length > 0) {
         const crossover = findCrossover(totalSamples, triggerLevel);
@@ -57,21 +59,21 @@ const Oscilloscope = ({ sources }) => {
     };
   }, [horizontalScale, triggerLevel]);
 
-  function bindInput(index) {
+  function connectInput(index) {
     // Find signal source
     const currentInput = input;
     const newInput = sources[index] || null;
 
     // Remove previous input
     if (currentInput !== null && currentInput !== newInput) {
-      currentInput.disconnect(waveform);
-      currentInput.disconnect(volume);
+      currentInput.disconnect(waveformRef.current);
+      currentInput.disconnect(volumeRef.current);
     }
 
     if (newInput !== null) {
       // Connect input
-      newInput.signal.connect(waveform);
-      newInput.signal.connect(volume);
+      newInput.signal.connect(waveformRef.current);
+      newInput.signal.connect(volumeRef.current);
       setInput(newInput.signal);
     } else {
       setInput(newInput);
@@ -82,7 +84,7 @@ const Oscilloscope = ({ sources }) => {
     if (Tone.context.state !== 'running') {
       Tone.context.resume();
     }
-    bindInput(e.target.value);
+    connectInput(e.target.value);
   }
 
   return (
@@ -140,14 +142,14 @@ const Oscilloscope = ({ sources }) => {
           value={volumeValue}
           setMute={(value) => {
             setVolumeMute(value);
-            volume.mute = value;
+            volumeRef.current.mute = value;
           }}
           setValue={(value) => {
             setVolumeMute(false);
-            volume.mute = false;
+            volumeRef.current.mute = false;
             const scaled = Math.log(value) * 24;
             setVolumeValue(value);
-            volume.volume.value = scaled;
+            volumeRef.current.volume.value = scaled;
           }}
         />
       </div>
