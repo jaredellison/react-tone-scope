@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useLayoutEffect, useRef } from 'react';
 import * as Tone from 'tone';
 
 import Control from './Control.js';
@@ -35,7 +35,7 @@ const Oscilloscope = ({ sources }) => {
   const waveformRef = useRef(new Tone.Waveform(MAX_SAMPLES));
   const volumeRef = useRef(new Tone.Volume({ volume: 0, mute: true }).toDestination());
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     let animationId;
 
     const trimLength = (SAMPLE_RATE * VERTICAL_DIVISIONS * horizontalScale) / 1000;
@@ -45,7 +45,6 @@ const Oscilloscope = ({ sources }) => {
 
       if (totalSamples.length > 0) {
         const crossover = findCrossover(totalSamples, triggerLevel);
-        console.log('crossover:', crossover);
         const newSamples = trimSamples(totalSamples, crossover, trimLength);
         setSamples(newSamples);
       }
