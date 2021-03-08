@@ -2,7 +2,7 @@ import React, { useState, useLayoutEffect, useRef } from 'react';
 import * as Tone from 'tone';
 
 import Control from './Control.tsx';
-import Screen from './Screen.js';
+import Screen from './Screen.tsx';
 import Volume from './Volume.tsx';
 
 import { trimSamples, findCrossover } from '../utils/utils.tsx';

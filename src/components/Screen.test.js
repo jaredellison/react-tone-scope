@@ -1,7 +1,7 @@
 import React from 'react';
 import { create } from 'react-test-renderer';
 
-import Screen from './Screen.js';
+import Screen from './Screen.tsx';
 
 let container;
 

@@ -6,7 +6,21 @@ import { scaleCoordinate } from '../utils/utils.tsx';
 const SCREEN_HEIGHT = 280;
 const SCREEN_WIDTH = 350;
 
-const Screen = ({ divsV, divsH, samples, verticalScale, triggerValue }) => {
+interface IProps {
+  divsV: number;
+  divsH: number;
+  samples: Array<number>;
+  verticalScale: number;
+  triggerValue: number;
+}
+
+const Screen: React.FC<IProps> = ({
+  divsV,
+  divsH,
+  samples,
+  verticalScale,
+  triggerValue
+}) => {
   const [shouldRenderTriggerLine, setShouldRenderTriggerLine] = useState(false);
 
   useEffect(() => {
