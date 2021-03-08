@@ -1,6 +1,13 @@
-import React from 'react';
+import React, { FunctionComponent } from 'react';
 
-const Divisions = ({ orientation, total, width, height }) => {
+interface IProps {
+  orientation: 'vertical' | 'horizontal';
+  total: number;
+  width: number;
+  height: number;
+}
+
+const Divisions: FunctionComponent<IProps> = ({ orientation, total, width, height }) => {
   let divs = new Array(total).fill(null);
 
   if (orientation === 'vertical') {
@@ -35,7 +42,7 @@ const Divisions = ({ orientation, total, width, height }) => {
     });
   }
 
-  return divs;
+  return <>{divs}</>;
 };
 
 export default Divisions;
