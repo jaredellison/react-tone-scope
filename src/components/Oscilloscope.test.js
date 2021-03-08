@@ -2,9 +2,17 @@ import React from 'react';
 import { shallow, mount } from 'enzyme';
 import * as Tone from 'tone';
 
-jest.mock('tone');
-
 import Oscilloscope from './Oscilloscope.js';
+
+jest.mock('tone', () => ({
+  Oscillator: class {
+    start() {}
+  },
+  Waveform: class {},
+  Volume: class {
+    toDestination() {}
+  }
+}));
 
 describe('Oscilloscope Component', () => {
   test('Renders 1 select element, 3 control components and 1 volume component ', () => {
