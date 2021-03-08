@@ -1,4 +1,4 @@
-import React, { FunctionComponent } from 'react';
+import React from 'react';
 
 interface IProps {
   orientation: 'vertical' | 'horizontal';
@@ -7,7 +7,7 @@ interface IProps {
   height: number;
 }
 
-const Divisions: FunctionComponent<IProps> = ({ orientation, total, width, height }) => {
+const Divisions: React.FC<IProps> = ({ orientation, total, width, height }) => {
   let divs = new Array(total).fill(null);
 
   if (orientation === 'vertical') {

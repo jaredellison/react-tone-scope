@@ -1,4 +1,4 @@
-import React, { FunctionComponent } from 'react';
+import React from 'react';
 
 interface IProps {
   mute: boolean;
@@ -7,7 +7,7 @@ interface IProps {
   setValue: Function;
 }
 
-const Volume: FunctionComponent<IProps> = ({ mute, value, setMute, setValue }) => (
+const Volume: React.FC<IProps> = ({ mute, value, setMute, setValue }) => (
   <div className="volume-container">
     <label htmlFor="mute" className="control-label">
       Mute
