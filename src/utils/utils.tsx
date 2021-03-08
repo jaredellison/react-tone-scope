@@ -1,4 +1,4 @@
-export const findCrossover = (samples: Array<number>, triggerLevel: number) => {
+export const findCrossover = (samples: Float32Array, triggerLevel: number) => {
   let midIndex = samples.length >> 1;
   // Start upper and lower around midpoint of totalSamples
   let lower = midIndex;
@@ -19,20 +19,20 @@ export const findCrossover = (samples: Array<number>, triggerLevel: number) => {
 };
 
 export const trimSamples = (
-  samples: Array<number>,
+  samples: Float32Array,
   crossover: number,
   trimLength: number
-) => {
-  const result = [];
+): Float32Array => {
+  const result = new Float32Array(trimLength);
   const trimMidPoint = trimLength >> 1;
 
   for (let i = 0; i < trimLength; i++) {
     // Map trim index to smaple index
     let sampleI = crossover + (i - trimMidPoint);
     if (sampleI < 0 || sampleI > samples.length - 1) {
-      result.push(0);
+      result[i] = 0;
     } else {
-      result.push(samples[sampleI]);
+      result[i] = samples[sampleI];
     }
   }
 

@@ -1,11 +1,11 @@
 import React, { useState, useLayoutEffect, useRef } from 'react';
 import * as Tone from 'tone';
 
-import Control from './Control.tsx';
-import Screen from './Screen.tsx';
-import Volume from './Volume.tsx';
+import Control from './Control';
+import Screen from './Screen';
+import Volume from './Volume';
 
-import { trimSamples, findCrossover } from '../utils/utils.tsx';
+import { trimSamples, findCrossover } from '../utils/utils';
 
 // MAX_SAMPLES Must be a power of 2
 // Increasing MAX_SAMPLES will increase horizontal resolution but also the
@@ -19,9 +19,18 @@ const SAMPLE_RATE = 44100;
 const VERTICAL_DIVISIONS = 10;
 const HORIZONTAL_DIVISIONS = 8;
 
-const Oscilloscope = ({ sources }) => {
+interface IProps {
+  sources: Array<{
+    signal: any;
+    name: string;
+  }>;
+}
+
+type NullableAudioNode = Tone.ToneAudioNode | null;
+
+const Oscilloscope: React.FC<IProps> = ({ sources }) => {
   // Control Values
-  const [input, setInput] = useState(null);
+  const [input, setInput] = useState<NullableAudioNode>(null);
   const [verticalScale, setVerticalScale] = useState(0.25);
   const [horizontalScale, setHorizontalScale] = useState(1); // milliseconds per division
   const [triggerLevel, setTriggerLevel] = useState(0);
@@ -29,14 +38,14 @@ const Oscilloscope = ({ sources }) => {
   const [volumeValue, setVolumeValue] = useState(0);
 
   // Audio Data
-  const [samples, setSamples] = useState([]);
+  const [samples, setSamples] = useState(new Float32Array(0));
 
   // Tone Object Refs
   const waveformRef = useRef(new Tone.Waveform(MAX_SAMPLES));
   const volumeRef = useRef(new Tone.Volume({ volume: 0, mute: true }).toDestination());
 
   useLayoutEffect(() => {
-    let animationId;
+    let animationId: number;
 
     const trimLength = (SAMPLE_RATE * VERTICAL_DIVISIONS * horizontalScale) / 1000;
 
@@ -59,13 +68,13 @@ const Oscilloscope = ({ sources }) => {
     };
   }, [horizontalScale, triggerLevel]);
 
-  function connectInput(index) {
+  function connectInput(index: number) {
     // Find signal source
-    const currentInput = input;
+    const currentInput: NullableAudioNode = input;
     const newInput = sources[index] || null;
 
     // Remove previous input
-    if (currentInput !== null && currentInput !== newInput) {
+    if (currentInput !== null && currentInput !== newInput.signal) {
       currentInput.disconnect(waveformRef.current);
       currentInput.disconnect(volumeRef.current);
     }
@@ -80,11 +89,11 @@ const Oscilloscope = ({ sources }) => {
     }
   }
 
-  function handleSelect(e) {
+  function handleSelect(e: React.SyntheticEvent<HTMLSelectElement>) {
     if (Tone.context.state !== 'running') {
       Tone.context.resume();
     }
-    connectInput(e.target.value);
+    connectInput(parseInt(e.currentTarget.value));
   }
 
   return (
@@ -115,8 +124,8 @@ const Oscilloscope = ({ sources }) => {
           label="Vertical Scale"
           unit="Units / Div"
           value={verticalScale}
-          handleStepUp={(value) => value * 2}
-          handleStepDown={(value) => value / 2}
+          handleStepUp={(value: number) => value * 2}
+          handleStepDown={(value: number) => value / 2}
         />
 
         <Control
@@ -140,11 +149,11 @@ const Oscilloscope = ({ sources }) => {
         <Volume
           mute={volumeMute}
           value={volumeValue}
-          setMute={(value) => {
+          setMute={(value: boolean) => {
             setVolumeMute(value);
             volumeRef.current.mute = value;
           }}
-          setValue={(value) => {
+          setValue={(value: number) => {
             setVolumeMute(false);
             volumeRef.current.mute = false;
             const scaled = Math.log(value) * 24;

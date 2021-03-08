@@ -6,9 +6,9 @@ interface IProps {
   unit: string;
   value: number;
   setValue: Function;
-  step: number;
-  handleStepDown: Function;
-  handleStepUp: Function;
+  step?: number;
+  handleStepDown?: Function;
+  handleStepUp?: Function;
 }
 
 const Control: React.FC<IProps> = ({
@@ -17,7 +17,7 @@ const Control: React.FC<IProps> = ({
   unit,
   value,
   setValue,
-  step,
+  step = 0,
   handleStepDown,
   handleStepUp
 }) => {

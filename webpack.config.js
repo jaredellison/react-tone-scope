@@ -17,6 +17,10 @@ module.exports = {
     port: 8000
   },
 
+  resolve: {
+    extensions: ['.tsx', '.ts', '.js']
+  },
+
   module: {
     rules: [
       {

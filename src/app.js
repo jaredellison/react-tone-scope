@@ -2,7 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import * as Tone from 'tone';
 
-import Oscilloscope from './components/Oscilloscope.js';
+import Oscilloscope from './components/Oscilloscope';
 import './style.css';
 import './media/favicon.ico';
 
