@@ -3,7 +3,7 @@ import * as Tone from 'tone';
 
 import Control from './Control.js';
 import Screen from './Screen.js';
-import Volume from './Volume.js';
+import Volume from './Volume.tsx';
 
 import { trimSamples, findCrossover } from '../utils/utils.js';
 

@@ -3,7 +3,7 @@ import ReactDOM from 'react-dom';
 import { act } from 'react-dom/test-utils';
 import TestUtils from 'react-dom/test-utils';
 
-import Volume from './Volume.js';
+import Volume from './Volume.tsx';
 
 let container;
 
