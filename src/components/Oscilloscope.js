@@ -1,7 +1,7 @@
 import React, { useState, useLayoutEffect, useRef } from 'react';
 import * as Tone from 'tone';
 
-import Control from './Control.js';
+import Control from './Control.tsx';
 import Screen from './Screen.js';
 import Volume from './Volume.tsx';
 
