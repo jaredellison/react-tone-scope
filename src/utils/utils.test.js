@@ -1,4 +1,4 @@
-import { findCrossover, trimSamples, scaleCoordinate } from './utils.js';
+import { findCrossover, trimSamples, scaleCoordinate } from './utils.tsx';
 
 describe('findCrossover', () => {
   it('should identify the crossover index', () => {

@@ -1,4 +1,4 @@
-export const findCrossover = (samples, triggerLevel) => {
+export const findCrossover = (samples: Array<number>, triggerLevel: number) => {
   let midIndex = samples.length >> 1;
   // Start upper and lower around midpoint of totalSamples
   let lower = midIndex;
@@ -18,7 +18,11 @@ export const findCrossover = (samples, triggerLevel) => {
   return midIndex;
 };
 
-export const trimSamples = (samples, crossover, trimLength) => {
+export const trimSamples = (
+  samples: Array<number>,
+  crossover: number,
+  trimLength: number
+) => {
   const result = [];
   const trimMidPoint = trimLength >> 1;
 
@@ -35,7 +39,14 @@ export const trimSamples = (samples, crossover, trimLength) => {
   return result;
 };
 
-export const scaleCoordinate = (n, inMin, inMax, outMin, outMax, factor = 1) => {
+export const scaleCoordinate = (
+  n: number,
+  inMin: number,
+  inMax: number,
+  outMin: number,
+  outMax: number,
+  factor = 1
+) => {
   const inRange = inMax - inMin;
   const outRange = outMax - outMin;
   const ratio = (n * factor - inMin) / inRange;

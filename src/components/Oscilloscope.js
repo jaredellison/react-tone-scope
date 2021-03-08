@@ -5,7 +5,7 @@ import Control from './Control.js';
 import Screen from './Screen.js';
 import Volume from './Volume.tsx';
 
-import { trimSamples, findCrossover } from '../utils/utils.js';
+import { trimSamples, findCrossover } from '../utils/utils.tsx';
 
 // MAX_SAMPLES Must be a power of 2
 // Increasing MAX_SAMPLES will increase horizontal resolution but also the
