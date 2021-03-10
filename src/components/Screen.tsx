@@ -6,7 +6,7 @@ import { scaleCoordinate } from '../utils/utils';
 const SCREEN_HEIGHT = 280;
 const SCREEN_WIDTH = 350;
 
-interface IProps {
+export interface IProps {
   divsV: number;
   divsH: number;
   samples: Float32Array;
