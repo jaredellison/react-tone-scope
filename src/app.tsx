@@ -9,7 +9,7 @@ import './media/favicon.ico';
 import voiceUrl from './media/audio/hello.mp3';
 import sweepUrl from './media/audio/chirp.mp3';
 
-type SourceOption = {
+export type SourceOption = {
   signal: any;
   name: string;
 };

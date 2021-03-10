@@ -1,6 +1,7 @@
 import React, { useState, useLayoutEffect, useRef } from 'react';
 import * as Tone from 'tone';
 
+import { SourceOption } from '../app';
 import Control from './Control';
 import Screen from './Screen';
 import Volume from './Volume';
@@ -20,10 +21,7 @@ const VERTICAL_DIVISIONS = 10;
 const HORIZONTAL_DIVISIONS = 8;
 
 interface IProps {
-  sources: Array<{
-    signal: any;
-    name: string;
-  }>;
+  sources: Array<SourceOption>;
 }
 
 type NullableAudioNode = Tone.ToneAudioNode | null;
