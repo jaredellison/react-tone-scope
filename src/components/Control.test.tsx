@@ -2,10 +2,10 @@ import React from 'react';
 import { mount } from 'enzyme';
 import { act } from 'react-dom/test-utils';
 
-import Control from './Control.js';
+import Control from './Control';
 
 describe('Control Component', () => {
-  test('Should increment and decrement using arrow buttons', () => {
+  it('should increment and decrement using arrow buttons', () => {
     const setValue = jest.fn(() => {});
     let controlValue = 0;
 
@@ -27,11 +27,11 @@ describe('Control Component', () => {
     decrementButton.simulate('click');
     incrementButton.simulate('click');
 
-    expect(setValue.mock.calls[0][0]).toBe(-0.1);
-    expect(setValue.mock.calls[1][0]).toBe(0.1);
+    expect(setValue).toHaveBeenNthCalledWith(1, -0.1);
+    expect(setValue).toHaveBeenNthCalledWith(2, 0.1);
   });
 
-  test('Should increment and decrement using stepUp and stepDown functions', () => {
+  it('should increment and decrement using stepUp and stepDown functions', () => {
     const setValue = jest.fn(() => {});
     const handleStepDown = jest.fn((x) => x / 2);
     const handleStepUp = jest.fn((x) => x * 2);
@@ -55,15 +55,17 @@ describe('Control Component', () => {
     const incrementButton = buttons.at(1);
 
     decrementButton.simulate('click');
+    expect(setValue).toHaveBeenCalledTimes(1);
+    expect(setValue).toHaveBeenCalledWith(0.5);
     incrementButton.simulate('click');
+    expect(setValue).toHaveBeenCalledTimes(2);
+    expect(setValue).toHaveBeenCalledWith(2);
 
-    expect(setValue.mock.calls[0][0]).toBe(0.5);
-    expect(setValue.mock.calls[1][0]).toBe(2);
     expect(handleStepUp.mock.calls.length).toBe(1);
     expect(handleStepDown.mock.calls.length).toBe(1);
   });
 
-  test('handleChange method should accept integer input', () => {
+  it('should accept typed integer input', () => {
     const setValue = jest.fn(() => {});
     let controlValue = 1;
 
@@ -80,9 +82,16 @@ describe('Control Component', () => {
 
     const input = wrapper.find('input');
 
+    let onChange;
     act(() => {
+      const event = {
+        currentTarget: { value: '5' }
+      } as React.ChangeEvent<HTMLInputElement>;
+
       input.simulate('focus');
-      input.simulate('change', { target: { value: '5' } });
+      onChange = input.prop('onChange');
+
+      if (onChange) onChange(event);
     });
 
     wrapper.update();
@@ -90,8 +99,14 @@ describe('Control Component', () => {
     expect(wrapper.find('input').props().value).toBe('5');
 
     act(() => {
+      const event = {
+        currentTarget: { value: '6' }
+      } as React.ChangeEvent<HTMLInputElement>;
+
       input.simulate('focus');
-      input.simulate('change', { target: { value: '6' } });
+      onChange = input.prop('onChange');
+
+      if (onChange) onChange(event);
     });
 
     wrapper.update();
@@ -99,7 +114,7 @@ describe('Control Component', () => {
     expect(wrapper.find('input').props().value).toBe('6');
   });
 
-  test('handleChange method should filter non-integer input', () => {
+  it('should filter non-integer typed input', () => {
     const setValue = jest.fn(() => {});
     let controlValue = 1;
 
@@ -116,9 +131,17 @@ describe('Control Component', () => {
 
     const input = wrapper.find('input');
 
+    let onChange;
+
     act(() => {
+      const event = {
+        currentTarget: { value: '5abcd' }
+      } as React.ChangeEvent<HTMLInputElement>;
+
       input.simulate('focus');
-      input.simulate('change', { target: { value: '5abcd' } });
+      onChange = input.prop('onChange');
+
+      if (onChange) onChange(event);
     });
 
     wrapper.update();
@@ -126,7 +149,7 @@ describe('Control Component', () => {
     expect(wrapper.find('input').props().value).toBe('5');
   });
 
-  test('handleChange method should accept negative and float input', () => {
+  it('should accept typed negative and float input', () => {
     const setValue = jest.fn(() => {});
     let controlValue = 1;
 
@@ -143,9 +166,17 @@ describe('Control Component', () => {
 
     const input = wrapper.find('input');
 
+    let onChange;
+
     act(() => {
+      const event = {
+        currentTarget: { value: '-0.1' }
+      } as React.ChangeEvent<HTMLInputElement>;
+
       input.simulate('focus');
-      input.simulate('change', { target: { value: '-0.1' } });
+      onChange = input.prop('onChange');
+
+      if (onChange) onChange(event);
     });
 
     wrapper.update();
@@ -153,7 +184,7 @@ describe('Control Component', () => {
     expect(wrapper.find('input').props().value).toBe('-0.1');
   });
 
-  xtest('handleEnterEvent method should call setter function when value is a number', () => {
+  it('should call setter function when the enter key is pressed and value is a number', () => {
     const setValue = jest.fn(() => {});
     const mockBlur = jest.fn(() => {});
     let controlValue = 1;
@@ -168,21 +199,29 @@ describe('Control Component', () => {
         value={controlValue}
       />
     );
-    const instance = wrapper.instance();
 
-    const enterEvent = {
-      code: 'Enter',
-      target: {
-        value: '999',
-        blur: mockBlur
-      }
-    };
+    const input = wrapper.find('input');
 
-    instance.handleEnterEvent(enterEvent);
-    expect(setValue.mock.calls[0][0]).toBe(999);
+    let onKeyUp;
+    act(() => {
+      const event = ({
+        code: 'Enter',
+        currentTarget: {
+          value: '999',
+          blur: mockBlur
+        }
+      } as any) as React.KeyboardEvent<HTMLInputElement>;
+
+      input.simulate('focus');
+      onKeyUp = input.prop('onKeyUp');
+
+      if (onKeyUp) onKeyUp(event);
+    });
+
+    expect(setValue).toHaveBeenCalledWith(999);
   });
 
-  xtest('handleEnterEvent method should not call setter function if value is not a number', () => {
+  it('should not call setter function if value is not a number', () => {
     const setValue = jest.fn(() => {});
     const mockBlur = jest.fn(() => {});
     let controlValue = 1;
@@ -197,21 +236,29 @@ describe('Control Component', () => {
         value={controlValue}
       />
     );
-    const instance = wrapper.instance();
 
-    const enterEvent = {
-      code: 'Enter',
-      target: {
-        value: 'abc',
-        blur: mockBlur
-      }
-    };
+    const input = wrapper.find('input');
 
-    instance.handleEnterEvent(enterEvent);
-    expect(setValue.mock.calls.length).toBe(0);
+    let onKeyUp;
+    act(() => {
+      const event = ({
+        code: 'Enter',
+        currentTarget: {
+          value: 'abc',
+          blur: mockBlur
+        }
+      } as any) as React.KeyboardEvent<HTMLInputElement>;
+
+      input.simulate('focus');
+      onKeyUp = input.prop('onKeyUp');
+
+      if (onKeyUp) onKeyUp(event);
+    });
+
+    expect(setValue).toHaveBeenCalledTimes(0);
   });
 
-  xtest('handleEnterEvent should blur the target element', () => {
+  it('should be blured after pressing enter', () => {
     const setValue = jest.fn(() => {});
     const mockBlur = jest.fn(() => {});
     let controlValue = 1;
@@ -226,21 +273,29 @@ describe('Control Component', () => {
         value={controlValue}
       />
     );
-    const instance = wrapper.instance();
 
-    const enterEvent = {
-      code: 'Enter',
-      target: {
-        value: '1',
-        blur: mockBlur
-      }
-    };
+    const input = wrapper.find('input');
 
-    instance.handleEnterEvent(enterEvent);
-    expect(mockBlur.mock.calls.length).toBe(1);
+    let onKeyUp;
+    act(() => {
+      const event = ({
+        code: 'Enter',
+        currentTarget: {
+          value: '999',
+          blur: mockBlur
+        }
+      } as any) as React.KeyboardEvent<HTMLInputElement>;
+
+      input.simulate('focus');
+      onKeyUp = input.prop('onKeyUp');
+
+      if (onKeyUp) onKeyUp(event);
+    });
+
+    expect(mockBlur).toHaveBeenCalledTimes(1);
   });
 
-  xtest('handleEnterEvent method should do nothing if code is not "Enter"', () => {
+  it('should not call setValue if any keys besides "Enter" are pressed', () => {
     const setValue = jest.fn(() => {});
     const mockBlur = jest.fn(() => {});
     let controlValue = 1;
@@ -255,64 +310,25 @@ describe('Control Component', () => {
         value={controlValue}
       />
     );
-    const instance = wrapper.instance();
 
-    const enterEvent = {
-      code: 'Space',
-      target: {
-        value: 'abc',
-        blur: mockBlur
-      }
-    };
+    const input = wrapper.find('input');
 
-    instance.handleEnterEvent(enterEvent);
-    expect(setValue.mock.calls.length).toBe(0);
-    expect(mockBlur.mock.calls.length).toBe(0);
-  });
+    let onKeyUp;
+    act(() => {
+      const event = ({
+        code: 'Space',
+        currentTarget: {
+          value: '999',
+          blur: mockBlur
+        }
+      } as any) as React.KeyboardEvent<HTMLInputElement>;
 
-  xtest('handleFocus method should trigger editing state', () => {
-    const setValue = jest.fn(() => {});
-    let controlValue = 1;
+      input.simulate('focus');
+      onKeyUp = input.prop('onKeyUp');
 
-    const wrapper = mount(
-      <Control
-        setValue={setValue}
-        id="control-component"
-        label="Label String"
-        unit="ms / Div"
-        step={0.1}
-        value={controlValue}
-      />
-    );
-    const instance = wrapper.instance();
+      if (onKeyUp) onKeyUp(event);
+    });
 
-    expect(wrapper.state('editing')).toBe(false);
-    instance.handleFocus();
-    expect(wrapper.state('tempValue')).toBe('');
-    expect(wrapper.state('editing')).toBe(true);
-  });
-
-  xtest('handleBlur method should remove editing state', () => {
-    const setValue = jest.fn(() => {});
-    let controlValue = 1;
-
-    const wrapper = mount(
-      <Control
-        setValue={setValue}
-        id="control-component"
-        label="Label String"
-        unit="ms / Div"
-        step={0.1}
-        value={controlValue}
-      />
-    );
-    const instance = wrapper.instance();
-
-    expect(wrapper.state('editing')).toBe(false);
-    instance.handleFocus();
-    expect(wrapper.state('tempValue')).toBe('');
-    expect(wrapper.state('editing')).toBe(true);
-    instance.handleBlur();
-    expect(wrapper.state('editing')).toBe(false);
+    expect(mockBlur).toHaveBeenCalledTimes(0);
   });
 });

@@ -72,7 +72,7 @@ const Oscilloscope: React.FC<IProps> = ({ sources }) => {
     const newInput = sources[index] || null;
 
     // Remove previous input
-    if (currentInput !== null && currentInput !== newInput.signal) {
+    if (currentInput !== null && currentInput !== newInput?.signal) {
       currentInput.disconnect(waveformRef.current);
       currentInput.disconnect(volumeRef.current);
     }
