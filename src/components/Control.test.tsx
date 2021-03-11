@@ -221,7 +221,7 @@ describe('Control Component', () => {
     expect(setValue).toHaveBeenCalledWith(999);
   });
 
-  xit('handleEnterEvent method should not call setter function if value is not a number', () => {
+  it('should not call setter function if value is not a number', () => {
     const setValue = jest.fn(() => {});
     const mockBlur = jest.fn(() => {});
     let controlValue = 1;
@@ -236,21 +236,29 @@ describe('Control Component', () => {
         value={controlValue}
       />
     );
-    const instance = wrapper.instance();
 
-    const enterEvent = {
-      code: 'Enter',
-      target: {
-        value: 'abc',
-        blur: mockBlur
-      }
-    };
+    const input = wrapper.find('input');
 
-    instance.handleEnterEvent(enterEvent);
-    expect(setValue.mock.calls.length).toBe(0);
+    let onKeyUp;
+    act(() => {
+      const event = ({
+        code: 'Enter',
+        currentTarget: {
+          value: 'abc',
+          blur: mockBlur
+        }
+      } as any) as React.KeyboardEvent<HTMLInputElement>;
+
+      input.simulate('focus');
+      onKeyUp = input.prop('onKeyUp');
+
+      if (onKeyUp) onKeyUp(event);
+    });
+
+    expect(setValue).toHaveBeenCalledTimes(0);
   });
 
-  xit('handleEnterEvent should blur the target element', () => {
+  it('should be blured after pressing enter', () => {
     const setValue = jest.fn(() => {});
     const mockBlur = jest.fn(() => {});
     let controlValue = 1;
@@ -265,21 +273,29 @@ describe('Control Component', () => {
         value={controlValue}
       />
     );
-    const instance = wrapper.instance();
 
-    const enterEvent = {
-      code: 'Enter',
-      target: {
-        value: '1',
-        blur: mockBlur
-      }
-    };
+    const input = wrapper.find('input');
 
-    instance.handleEnterEvent(enterEvent);
-    expect(mockBlur.mock.calls.length).toBe(1);
+    let onKeyUp;
+    act(() => {
+      const event = ({
+        code: 'Enter',
+        currentTarget: {
+          value: '999',
+          blur: mockBlur
+        }
+      } as any) as React.KeyboardEvent<HTMLInputElement>;
+
+      input.simulate('focus');
+      onKeyUp = input.prop('onKeyUp');
+
+      if (onKeyUp) onKeyUp(event);
+    });
+
+    expect(mockBlur).toHaveBeenCalledTimes(1);
   });
 
-  xit('handleEnterEvent method should do nothing if code is not "Enter"', () => {
+  it('should not call setValue if any keys besides "Enter" are pressed', () => {
     const setValue = jest.fn(() => {});
     const mockBlur = jest.fn(() => {});
     let controlValue = 1;
@@ -294,64 +310,25 @@ describe('Control Component', () => {
         value={controlValue}
       />
     );
-    const instance = wrapper.instance();
 
-    const enterEvent = {
-      code: 'Space',
-      target: {
-        value: 'abc',
-        blur: mockBlur
-      }
-    };
+    const input = wrapper.find('input');
 
-    instance.handleEnterEvent(enterEvent);
-    expect(setValue.mock.calls.length).toBe(0);
-    expect(mockBlur.mock.calls.length).toBe(0);
-  });
+    let onKeyUp;
+    act(() => {
+      const event = ({
+        code: 'Space',
+        currentTarget: {
+          value: '999',
+          blur: mockBlur
+        }
+      } as any) as React.KeyboardEvent<HTMLInputElement>;
 
-  xit('handleFocus method should trigger editing state', () => {
-    const setValue = jest.fn(() => {});
-    let controlValue = 1;
+      input.simulate('focus');
+      onKeyUp = input.prop('onKeyUp');
 
-    const wrapper = mount(
-      <Control
-        setValue={setValue}
-        id="control-component"
-        label="Label String"
-        unit="ms / Div"
-        step={0.1}
-        value={controlValue}
-      />
-    );
-    const instance = wrapper.instance();
+      if (onKeyUp) onKeyUp(event);
+    });
 
-    expect(wrapper.state('editing')).toBe(false);
-    instance.handleFocus();
-    expect(wrapper.state('tempValue')).toBe('');
-    expect(wrapper.state('editing')).toBe(true);
-  });
-
-  xit('handleBlur method should remove editing state', () => {
-    const setValue = jest.fn(() => {});
-    let controlValue = 1;
-
-    const wrapper = mount(
-      <Control
-        setValue={setValue}
-        id="control-component"
-        label="Label String"
-        unit="ms / Div"
-        step={0.1}
-        value={controlValue}
-      />
-    );
-    const instance = wrapper.instance();
-
-    expect(wrapper.state('editing')).toBe(false);
-    instance.handleFocus();
-    expect(wrapper.state('tempValue')).toBe('');
-    expect(wrapper.state('editing')).toBe(true);
-    instance.handleBlur();
-    expect(wrapper.state('editing')).toBe(false);
+    expect(mockBlur).toHaveBeenCalledTimes(0);
   });
 });
