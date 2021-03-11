@@ -1,12 +1,23 @@
 import React, { useState } from 'react';
 
-const Control = ({
+interface IProps {
+  id: string;
+  label: string;
+  unit: string;
+  value: number;
+  setValue: Function;
+  step?: number;
+  handleStepDown?: Function;
+  handleStepUp?: Function;
+}
+
+const Control: React.FC<IProps> = ({
   id,
   label,
   unit,
   value,
   setValue,
-  step,
+  step = 0,
   handleStepDown,
   handleStepUp
 }) => {
@@ -37,13 +48,13 @@ const Control = ({
     setValue(newValue);
   }
 
-  function handleEnterEvent(e) {
+  function handleEnterEvent(e: React.KeyboardEvent<HTMLInputElement>) {
     if (e.code === 'Enter') {
-      const value = Number(e.target.value);
-      if (!isNaN(value) && e.target.value.length > 0) {
+      const value = Number(e.currentTarget.value);
+      if (!isNaN(value) && e.currentTarget.value.length > 0) {
         setValue(value);
       }
-      e.target.blur();
+      e.currentTarget.blur();
     }
   }
 
@@ -60,8 +71,8 @@ const Control = ({
     }
   }
 
-  function handleChange(e) {
-    const value = e.target.value
+  function handleChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const value = e.currentTarget.value
       .split('')
       .filter((e) => {
         if (!isNaN(Number(e))) return true;
@@ -84,9 +95,9 @@ const Control = ({
           className="control-input"
           type="text"
           id={id}
-          minLength="4"
-          maxLength="8"
-          size="10"
+          minLength={4}
+          maxLength={8}
+          size={10}
           value={editing ? tempValue : value.toFixed(2)}
           onChange={handleChange}
           onFocus={handleFocus}

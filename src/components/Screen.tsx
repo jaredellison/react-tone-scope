@@ -1,12 +1,26 @@
 import React, { useState, useEffect } from 'react';
 
-import Divisions from './Divisions.js';
-import { scaleCoordinate } from '../utils/utils.js';
+import Divisions from './Divisions';
+import { scaleCoordinate } from '../utils/utils';
 
 const SCREEN_HEIGHT = 280;
 const SCREEN_WIDTH = 350;
 
-const Screen = ({ divsV, divsH, samples, verticalScale, triggerValue }) => {
+export interface IProps {
+  divsV: number;
+  divsH: number;
+  samples: Float32Array;
+  verticalScale: number;
+  triggerValue: number;
+}
+
+const Screen: React.FC<IProps> = ({
+  divsV,
+  divsH,
+  samples,
+  verticalScale,
+  triggerValue
+}) => {
   const [shouldRenderTriggerLine, setShouldRenderTriggerLine] = useState(false);
 
   useEffect(() => {

@@ -3,9 +3,9 @@ import ReactDOM from 'react-dom';
 import { act } from 'react-dom/test-utils';
 import TestUtils from 'react-dom/test-utils';
 
-import Volume from './Volume.js';
+import Volume from './Volume';
 
-let container;
+let container: HTMLElement;
 
 beforeEach(() => {
   container = document.createElement('div');
@@ -14,7 +14,6 @@ beforeEach(() => {
 
 afterEach(() => {
   document.body.removeChild(container);
-  container = null;
 });
 
 describe('Volume Component', () => {
@@ -37,6 +36,8 @@ describe('Volume Component', () => {
     });
 
     const muteInput = document.getElementById('mute');
+    if (!muteInput) fail();
+
     act(() => {
       muteInput.dispatchEvent(new MouseEvent('click', { bubbles: true }));
     });
@@ -63,13 +64,18 @@ describe('Volume Component', () => {
       );
     });
 
-    const volumeInput = document.getElementById('volume-control');
+    const volumeInput = document.getElementById('volume-control') as HTMLInputElement;
+    if (!volumeInput) fail();
     act(() => {
-      TestUtils.Simulate.change(volumeInput, { target: { value: '0.5' } });
+      const changeEvent = {
+        target: { value: '0.5' }
+      } as React.ChangeEvent<HTMLInputElement>;
+
+      TestUtils.Simulate.change(volumeInput, changeEvent as any);
     });
 
-    expect(muteSetter.mock.calls.length).toBe(0);
-    expect(volumeSetter.mock.calls.length).toBe(1);
-    expect(volumeSetter.mock.calls[0][0]).toBe(0.5);
+    expect(muteSetter).toHaveBeenCalledTimes(0);
+    expect(volumeSetter).toHaveBeenCalledTimes(1);
+    expect(volumeSetter).toHaveBeenCalledWith(0.5);
   });
 });

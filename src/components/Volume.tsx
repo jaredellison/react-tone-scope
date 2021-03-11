@@ -1,6 +1,13 @@
 import React from 'react';
 
-const Volume = ({ mute, value, setMute, setValue }) => (
+interface IProps {
+  mute: boolean;
+  value: number;
+  setMute: Function;
+  setValue: Function;
+}
+
+const Volume: React.FC<IProps> = ({ mute, value, setMute, setValue }) => (
   <div className="volume-container">
     <label htmlFor="mute" className="control-label">
       Mute
