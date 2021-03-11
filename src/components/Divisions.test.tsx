@@ -2,9 +2,9 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import { act } from 'react-dom/test-utils';
 
-import Divisions from './Divisions.tsx';
+import Divisions from './Divisions';
 
-let container;
+let container: HTMLElement;
 
 beforeEach(() => {
   container = document.createElement('div');
@@ -13,7 +13,6 @@ beforeEach(() => {
 
 afterEach(() => {
   document.body.removeChild(container);
-  container = null;
 });
 
 describe('Divisions Component', () => {
@@ -57,8 +56,8 @@ describe('Divisions Component', () => {
 
     const divisions = Array.from(document.getElementsByTagName('line'));
     const divisionXCoordinates = divisions.map((e) => [
-      e.attributes.getNamedItem('x1').value,
-      e.attributes.getNamedItem('x2').value
+      e.attributes.getNamedItem('x1')?.value,
+      e.attributes.getNamedItem('x2')?.value
     ]);
 
     expect(divisionXCoordinates).toEqual([
@@ -92,8 +91,8 @@ describe('Divisions Component', () => {
       );
     });
     const divisions = document.getElementsByTagName('line');
-    expect(divisions[4].attributes.getNamedItem('stroke').value).toBe('lightgrey');
-    expect(divisions[5].attributes.getNamedItem('stroke').value).toBe('grey');
+    expect(divisions[4].attributes.getNamedItem('stroke')?.value).toBe('lightgrey');
+    expect(divisions[5].attributes.getNamedItem('stroke')?.value).toBe('grey');
   });
 
   test('Renders the correct number of horizontal divisions', () => {
@@ -136,8 +135,8 @@ describe('Divisions Component', () => {
 
     const divisions = Array.from(document.getElementsByTagName('line'));
     const divisionYCoordinates = divisions.map((e) => [
-      e.attributes.getNamedItem('y1').value,
-      e.attributes.getNamedItem('y2').value
+      e.attributes.getNamedItem('y1')?.value,
+      e.attributes.getNamedItem('y2')?.value
     ]);
 
     expect(divisionYCoordinates).toEqual([
@@ -171,7 +170,7 @@ describe('Divisions Component', () => {
       );
     });
     const divisions = document.getElementsByTagName('line');
-    expect(divisions[4].attributes.getNamedItem('stroke').value).toBe('lightgrey');
-    expect(divisions[5].attributes.getNamedItem('stroke').value).toBe('grey');
+    expect(divisions[4].attributes.getNamedItem('stroke')?.value).toBe('lightgrey');
+    expect(divisions[5].attributes.getNamedItem('stroke')?.value).toBe('grey');
   });
 });
