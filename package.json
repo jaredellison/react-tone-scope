@@ -6,9 +6,9 @@
   "scripts": {
     "test": "jest --watch",
     "type-check": "tsc --noEmit",
-    "build-dev": "webpack --mode development",
-    "build": "webpack --mode production",
-    "start": "webpack serve --mode development"
+    "build-dev": "esbuild src/app.tsx --bundle '--define:process.env.NODE_ENV=\"development\"' --loader:.mp3=file --loader:.ico=file --outdir=dist/assets --public-path=/assets",
+    "build": "esbuild src/app.tsx --bundle --minify '--define:process.env.NODE_ENV=\"production\"' --loader:.mp3=file --loader:.ico=file --outdir=dist/assets --public-path=/assets",
+    "start": "esbuild src/app.tsx --bundle '--define:process.env.NODE_ENV=\"development\"' --loader:.mp3=file --loader:.ico=file --servedir=dist --outdir=dist/assets --public-path=/assets"
   },
   "keywords": [
     "Oscilloscope",
