@@ -5,6 +5,7 @@
   "main": "webpack.config.js",
   "scripts": {
     "test": "jest --watch",
+    "type-check": "tsc --noEmit",
     "build-dev": "webpack --mode development",
     "build": "webpack --mode production",
     "start": "webpack serve --mode development"
