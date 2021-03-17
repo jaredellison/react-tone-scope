@@ -5,7 +5,7 @@
 node_modules
 
 # Build Artifacts
-dist
+dist/assets
 
 # Etc
 notes.md
